@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Área do cliente • Rose Freitas{% endblock %}
+{% block content %}
+<section class="form-shell">
+  <span class="eyebrow">ÁREA DO CLIENTE</span><h1>Seus conteúdos em um só lugar</h1><p>Digite o e-mail cadastrado para visualizar os acessos liberados no painel.</p>
+  <form method="post" class="form-card compact">{% csrf_token %}<label>E-mail</label><input class="form-control" type="email" name="email" value="{{ email }}" required><button class="btn gold full" type="submit">Ver meus conteúdos</button></form>
+  {% if accesses %}<div class="access-grid">{% for access in accesses %}<article class="card"><div class="card-kicker">ACESSO LIBERADO</div><h3>{{ access.product.title }}</h3>
+    {% for m in access.product.materials.all %}{% if m.active %}<a class="material-link" href="{{ m.url }}" target="_blank">↗ {{ m.title }}</a>{% endif %}{% empty %}<p>Os materiais serão adicionados em breve.</p>{% endfor %}
+  </article>{% endfor %}</div>{% endif %}
+</section>
+{% endblock %}
