@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}{{ product.title }} • Rose Freitas{% endblock %}
+{% block content %}
+<section class="form-shell">
+  <span class="eyebrow">{{ product.title|upper }}</span><h1>Antes do acesso, preencha seus dados</h1>
+  <p>Essas informações serão enviadas para o painel da Rose para acompanhamento da solicitação.</p>
+  <form method="post" class="form-card">{% csrf_token %}{{ form.as_p }}<button class="btn gold full" type="submit">Continuar</button></form>
+</section>
+{% endblock %}
