@@ -1,11 +1,16 @@
+import secrets
+from datetime import timedelta
 from decimal import Decimal
 from django.contrib import messages
+from django.contrib.auth.hashers import make_password,check_password
+from django.core.mail import send_mail
 from django.contrib.admin.views.decorators import staff_member_required
 from django.db.models import Sum
 from django.shortcuts import get_object_or_404,redirect,render
 from django.utils import timezone
+from django.conf import settings
 from django.views.decorators.http import require_POST
-from .models import SiteSettings,Banner,Product,VipRequest,Order,CustomerAccess,AgendaItem,Expense
+from .models import SiteSettings,Banner,Product,VipRequest,Order,CustomerAccess,CustomerLoginCode,AgendaItem,Expense
 from .forms import ProductForm,VipRequestForm,BannerForm,AgendaForm,ExpenseForm,SettingsForm,OrderForm,CustomerAccessForm
 
 def site_settings():
@@ -39,12 +44,37 @@ def vip_success(request,pk):
     return render(request,"core/vip_success.html",{"site":site_settings(),"item":item})
 
 def customer_area(request):
-    email=(request.POST.get("email") or "").strip().lower()
-    accesses=[]
     if request.method=="POST":
-        accesses=CustomerAccess.objects.filter(email__iexact=email,active=True).select_related("product").prefetch_related("product__materials")
-        if not accesses: messages.warning(request,"Nenhum acesso ativo foi encontrado para esse e-mail.")
-    return render(request,"core/customer_area.html",{"site":site_settings(),"accesses":accesses,"email":email})
+        action=request.POST.get("action","request")
+        if action=="logout":
+            request.session.pop("customer_verified",None)
+            request.session.pop("pending_customer_email",None)
+            return redirect("customer_area")
+        if action=="request":
+            email=(request.POST.get("email") or "").strip().lower()
+            request.session["pending_customer_email"]=email
+            exists=CustomerAccess.objects.filter(email__iexact=email,active=True).exists()
+            if exists:
+                code=f"{secrets.randbelow(1000000):06d}"
+                CustomerLoginCode.objects.create(email=email,code_hash=make_password(code),expires_at=timezone.now()+timedelta(minutes=10))
+                send_mail("Seu código de acesso • Rose Freitas",f"Seu código de acesso é {code}. Ele expira em 10 minutos.",settings.DEFAULT_FROM_EMAIL,[email],fail_silently=True)
+            messages.success(request,"Se o e-mail tiver acesso liberado, um código foi enviado.")
+            return redirect("customer_area")
+        if action=="verify":
+            email=request.session.get("pending_customer_email","")
+            code=(request.POST.get("code") or "").strip()
+            item=CustomerLoginCode.objects.filter(email__iexact=email,used=False,expires_at__gt=timezone.now()).first()
+            if item and check_password(code,item.code_hash):
+                item.used=True; item.save(update_fields=["used"])
+                request.session["customer_verified"]=email
+                request.session.pop("pending_customer_email",None)
+                return redirect("customer_area")
+            messages.error(request,"Código inválido ou expirado.")
+            return redirect("customer_area")
+    email=request.session.get("customer_verified","")
+    pending_email=request.session.get("pending_customer_email","")
+    accesses=CustomerAccess.objects.filter(email__iexact=email,active=True).select_related("product").prefetch_related("product__materials") if email else []
+    return render(request,"core/customer_area.html",{"site":site_settings(),"accesses":accesses,"email":email,"pending_email":pending_email})
 
 @staff_member_required(login_url="/painel/entrar/")
 def dashboard(request):
