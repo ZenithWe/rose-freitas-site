@@ -2,10 +2,19 @@
 {% block title %}Área do cliente • Rose Freitas{% endblock %}
 {% block content %}
 <section class="form-shell">
-  <span class="eyebrow">ÁREA DO CLIENTE</span><h1>Seus conteúdos em um só lugar</h1><p>Digite o e-mail cadastrado para visualizar os acessos liberados no painel.</p>
-  <form method="post" class="form-card compact">{% csrf_token %}<label>E-mail</label><input class="form-control" type="email" name="email" value="{{ email }}" required><button class="btn gold full" type="submit">Ver meus conteúdos</button></form>
-  {% if accesses %}<div class="access-grid">{% for access in accesses %}<article class="card"><div class="card-kicker">ACESSO LIBERADO</div><h3>{{ access.product.title }}</h3>
-    {% for m in access.product.materials.all %}{% if m.active %}<a class="material-link" href="{{ m.url }}" target="_blank">↗ {{ m.title }}</a>{% endif %}{% empty %}<p>Os materiais serão adicionados em breve.</p>{% endfor %}
-  </article>{% endfor %}</div>{% endif %}
+  <span class="eyebrow">ÁREA DO CLIENTE</span><h1>Seus conteúdos em um só lugar</h1>
+  {% if email %}
+    <p>Acesso confirmado para <strong>{{ email }}</strong>.</p>
+    <form method="post" style="margin-bottom:20px">{% csrf_token %}<input type="hidden" name="action" value="logout"><button class="btn ghost small">Sair desta área</button></form>
+    <div class="access-grid">{% for access in accesses %}<article class="card"><div class="card-kicker">ACESSO LIBERADO</div><h3>{{ access.product.title }}</h3>
+      {% for m in access.product.materials.all %}{% if m.active %}<a class="material-link" href="{{ m.url }}" target="_blank" rel="noopener">↗ {{ m.title }}</a>{% endif %}{% empty %}<p>Os materiais serão adicionados em breve.</p>{% endfor %}
+    </article>{% empty %}<p>Nenhum conteúdo ativo.</p>{% endfor %}</div>
+  {% elif pending_email %}
+    <p>Digite o código de 6 dígitos enviado para <strong>{{ pending_email }}</strong>. Ele expira em 10 minutos.</p>
+    <form method="post" class="form-card compact">{% csrf_token %}<input type="hidden" name="action" value="verify"><label>Código</label><input class="form-control" inputmode="numeric" maxlength="6" name="code" required><button class="btn gold full" type="submit">Confirmar acesso</button></form>
+  {% else %}
+    <p>Digite o e-mail cadastrado. Enviaremos um código temporário antes de liberar os materiais.</p>
+    <form method="post" class="form-card compact">{% csrf_token %}<input type="hidden" name="action" value="request"><label>E-mail</label><input class="form-control" type="email" name="email" required><button class="btn gold full" type="submit">Enviar código</button></form>
+  {% endif %}
 </section>
 {% endblock %}
