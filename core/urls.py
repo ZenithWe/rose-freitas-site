@@ -1,0 +1,33 @@
+from django.urls import path
+from django.contrib.auth.views import LoginView,LogoutView
+from . import views
+
+urlpatterns=[
+    path("",views.home,name="home"),
+    path("produto/<slug:slug>/",views.product_detail,name="product_detail"),
+    path("vip/<slug:slug>/",views.vip_request,name="vip_request"),
+    path("vip/sucesso/<int:pk>/",views.vip_success,name="vip_success"),
+    path("area-do-cliente/",views.customer_area,name="customer_area"),
+    path("painel/entrar/",LoginView.as_view(template_name="registration/login.html"),name="panel_login"),
+    path("painel/sair/",LogoutView.as_view(),name="panel_logout"),
+    path("painel/",views.dashboard,name="dashboard"),
+    path("painel/produtos/",views.products,name="panel_products"),
+    path("painel/produtos/novo/",views.product_form,name="panel_product_new"),
+    path("painel/produtos/<int:pk>/",views.product_form,name="panel_product_edit"),
+    path("painel/produtos/<int:pk>/excluir/",views.product_delete,name="panel_product_delete"),
+    path("painel/vip/",views.vip_requests,name="panel_vip"),
+    path("painel/vip/<int:pk>/<str:status>/",views.vip_status,name="panel_vip_status"),
+    path("painel/banners/",views.banners,name="panel_banners"),
+    path("painel/banners/novo/",views.banner_form,name="panel_banner_new"),
+    path("painel/banners/<int:pk>/",views.banner_form,name="panel_banner_edit"),
+    path("painel/agenda/",views.agenda,name="panel_agenda"),
+    path("painel/agenda/novo/",views.agenda_form,name="panel_agenda_new"),
+    path("painel/agenda/<int:pk>/",views.agenda_form,name="panel_agenda_edit"),
+    path("painel/pedidos/",views.orders,name="panel_orders"),
+    path("painel/pedidos/<int:pk>/",views.order_form,name="panel_order_edit"),
+    path("painel/clientes/",views.customers,name="panel_customers"),
+    path("painel/clientes/novo/",views.customer_form,name="panel_customer_new"),
+    path("painel/financeiro/",views.finance,name="panel_finance"),
+    path("painel/financeiro/despesa/",views.expense_form,name="panel_expense_new"),
+    path("painel/configuracoes/",views.settings_view,name="panel_settings"),
+]
