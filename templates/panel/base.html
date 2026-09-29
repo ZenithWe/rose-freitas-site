@@ -1,23 +1,50 @@
 {% load static %}
 <!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{% block title %}Painel • Rose Freitas{% endblock %}</title><link rel="stylesheet" href="{% static 'css/style.css' %}"></head>
 <body class="panel-body">
-<aside class="sidebar">
-<a class="panel-brand" href="{% url 'dashboard' %}"><span>ROSE</span> FREITAS<small>ADMIN</small></a>
-<nav>
-<a href="{% url 'dashboard' %}">Dashboard</a>
-<a href="{% url 'panel_products' %}">Cursos e produtos</a>
-<a href="{% url 'panel_vip' %}">Solicitações VIP</a>
-<a href="{% url 'panel_orders' %}">Pedidos</a>
-<a href="{% url 'panel_customers' %}">Clientes</a>
-<a href="{% url 'panel_banners' %}">Banners</a>
-<a href="{% url 'panel_agenda' %}">Agenda</a>
-<a href="{% url 'panel_finance' %}">Financeiro</a>
-<a href="{% url 'panel_settings' %}">Configurações</a>
-</nav>
-<div class="sidebar-bottom"><a href="{% url 'home' %}" target="_blank">Ver site ↗</a><form method="post" action="{% url 'panel_logout' %}">{% csrf_token %}<button type="submit">Sair</button></form></div>
+<aside class="sidebar" id="panel-sidebar">
+  <a href="{% url 'dashboard' %}" class="panel-brand">
+    <span class="panel-brand-word">rose<span>.</span></span>
+    <span class="panel-brand-place">FREITAS <b>ADMIN</b></span>
+  </a>
+  <span class="nav-section-label">GESTÃO</span>
+  <nav aria-label="Menu administrativo">
+    <a class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}"><span class="nav-icon">▦</span>Visão geral</a>
+    <a class="{% if 'product' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'panel_products' %}"><span class="nav-icon">◆</span>Cursos e produtos</a>
+    <a class="{% if request.resolver_match.url_name == 'panel_vip' or request.resolver_match.url_name == 'panel_vip_status' %}active{% endif %}" href="{% url 'panel_vip' %}"><span class="nav-icon">★</span>Solicitações VIP</a>
+    <a class="{% if 'order' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'panel_orders' %}"><span class="nav-icon">≡</span>Pedidos</a>
+    <a class="{% if 'customer' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'panel_customers' %}"><span class="nav-icon">●</span>Clientes</a>
+    <a class="{% if 'finance' in request.resolver_match.url_name or 'expense' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'panel_finance' %}"><span class="nav-icon">R$</span>Financeiro</a>
+    <span class="nav-section-label">SEU SITE</span>
+    <a class="{% if 'banner' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'panel_banners' %}"><span class="nav-icon">▣</span>Banners</a>
+    <a class="{% if 'agenda' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'panel_agenda' %}"><span class="nav-icon">□</span>Agenda</a>
+    <a class="{% if request.resolver_match.url_name == 'panel_settings' %}active{% endif %}" href="{% url 'panel_settings' %}"><span class="nav-icon">⚙</span>Configurações</a>
+  </nav>
+  <div class="sidebar-bottom">
+    <a href="{% url 'home' %}" target="_blank" rel="noopener"><span class="nav-icon">↗</span>Visualizar site</a>
+    <div class="sidebar-profile">
+      <span class="avatar">{{ request.user.username|first|upper }}</span>
+      <div><strong>{{ request.user.first_name|default:request.user.username }}</strong><small>Administrador</small></div>
+      <form method="post" action="{% url 'panel_logout' %}">{% csrf_token %}<button class="logout-btn" type="submit" title="Sair">↪</button></form>
+    </div>
+  </div>
 </aside>
+
 <div class="panel-main">
-<header class="panel-top"><div><span class="eyebrow">ROSE FREITAS</span><h1>{% block heading %}Painel{% endblock %}</h1></div><div class="user-pill">{{ request.user.username }}</div></header>
-{% if messages %}{% for message in messages %}<div class="flash {{ message.tags }}">{{ message }}</div>{% endfor %}{% endif %}
-{% block panel_content %}{% endblock %}
-</div></body></html>
+  <header class="panel-topbar">
+    <div>
+      <button class="panel-menu-btn" type="button" onclick="document.body.classList.toggle('panel-menu-open')" aria-label="Abrir menu">☰</button>
+      <span>Rose Freitas <span class="muted">/ Gestão</span></span>
+    </div>
+    <span class="topbar-security">Área administrativa</span>
+  </header>
+  <main class="panel-content">
+    {% if messages %}<div class="messages">{% for message in messages %}<div class="message {{ message.tags }}">{{ message }}</div>{% endfor %}</div>{% endif %}
+    {% block page_heading %}<div class="page-heading"><div><h1>{% block heading %}Painel{% endblock %}</h1></div></div>{% endblock %}
+    {% block panel_content %}{% endblock %}
+  </main>
+  <footer class="panel-footer">Rose Freitas • Área administrativa <span>Horários de Brasília</span></footer>
+</div>
+<script>
+document.querySelectorAll('.sidebar nav a,.sidebar-bottom>a').forEach(a=>a.addEventListener('click',()=>document.body.classList.remove('panel-menu-open')));
+</script>
+</body></html>
