@@ -1,0 +1,23 @@
+{% load static %}
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{% block title %}Painel • Rose Freitas{% endblock %}</title><link rel="stylesheet" href="{% static 'css/style.css' %}"></head>
+<body class="panel-body">
+<aside class="sidebar">
+<a class="panel-brand" href="{% url 'dashboard' %}"><span>ROSE</span> FREITAS<small>ADMIN</small></a>
+<nav>
+<a href="{% url 'dashboard' %}">Dashboard</a>
+<a href="{% url 'panel_products' %}">Cursos e produtos</a>
+<a href="{% url 'panel_vip' %}">Solicitações VIP</a>
+<a href="{% url 'panel_orders' %}">Pedidos</a>
+<a href="{% url 'panel_customers' %}">Clientes</a>
+<a href="{% url 'panel_banners' %}">Banners</a>
+<a href="{% url 'panel_agenda' %}">Agenda</a>
+<a href="{% url 'panel_finance' %}">Financeiro</a>
+<a href="{% url 'panel_settings' %}">Configurações</a>
+</nav>
+<div class="sidebar-bottom"><a href="{% url 'home' %}" target="_blank">Ver site ↗</a><form method="post" action="{% url 'panel_logout' %}">{% csrf_token %}<button type="submit">Sair</button></form></div>
+</aside>
+<div class="panel-main">
+<header class="panel-top"><div><span class="eyebrow">ROSE FREITAS</span><h1>{% block heading %}Painel{% endblock %}</h1></div><div class="user-pill">{{ request.user.username }}</div></header>
+{% if messages %}{% for message in messages %}<div class="flash {{ message.tags }}">{{ message }}</div>{% endfor %}{% endif %}
+{% block panel_content %}{% endblock %}
+</div></body></html>
