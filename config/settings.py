@@ -27,6 +27,10 @@ TEMPLATES=[{"BACKEND":"django.template.backends.django.DjangoTemplates","DIRS":[
 "OPTIONS":{"context_processors":["django.template.context_processors.request","django.contrib.auth.context_processors.auth","django.contrib.messages.context_processors.messages"]}}]
 WSGI_APPLICATION="config.wsgi.application"
 DATABASES={"default":dj_database_url.config(default=f"sqlite:///{BASE_DIR/'db.sqlite3'}",conn_max_age=600)}
+if os.getenv("DATABASE_URL"):
+    DATABASES["default"].setdefault("OPTIONS", {})
+    DATABASES["default"]["OPTIONS"]["sslmode"]="require"
+    DATABASES["default"]["OPTIONS"]["options"]="-c search_path=rose_app,public"
 AUTH_PASSWORD_VALIDATORS=[
 {"NAME":"django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
 {"NAME":"django.contrib.auth.password_validation.MinimumLengthValidator"},
