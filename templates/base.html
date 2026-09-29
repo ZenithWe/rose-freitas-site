@@ -4,31 +4,44 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{% block title %}Rose Freitas{% endblock %}</title>
+<meta name="theme-color" content="#0b0b0b">
 <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
 <header class="site-header">
-  <a class="brand" href="{% url 'home' %}"><span>ROSE</span> FREITAS</a>
-  <button class="menu-btn" onclick="document.body.classList.toggle('menu-open')" aria-label="Abrir menu">☰</button>
-  <nav>
-    <a href="{% url 'home' %}#cursos">Cursos</a>
-    <a href="{% url 'home' %}#vip">VIP</a>
-    <a href="{% url 'home' %}#agenda">Agenda</a>
-    <a href="{% url 'customer_area' %}">Área do cliente</a>
-    <a class="nav-cta" href="{% url 'home' %}#contato">Contato</a>
-  </nav>
+  <div class="site-nav container">
+    <a class="brand" href="{% url 'home' %}">
+      <strong>ROSE<span>.</span></strong><small>FREITAS</small>
+    </a>
+    <button class="menu-btn" onclick="document.body.classList.toggle('menu-open')" aria-label="Abrir menu">☰</button>
+    <nav>
+      <a href="{% url 'home' %}#cursos">Cursos</a>
+      <a href="{% url 'home' %}#vip">VIP</a>
+      <a href="{% url 'home' %}#agenda">Agenda</a>
+      <a href="{% url 'customer_area' %}">Área do cliente</a>
+      <a class="nav-cta" href="{% url 'home' %}#contato">Contato</a>
+    </nav>
+  </div>
 </header>
 {% if messages %}<div class="flash-wrap">{% for message in messages %}<div class="flash {{ message.tags }}">{{ message }}</div>{% endfor %}</div>{% endif %}
 <main>{% block content %}{% endblock %}</main>
-<footer id="contato">
-  <div><strong>Rose Freitas</strong><p>Conteúdo, presença, estratégia e comunidade.</p></div>
-  <div class="socials">
-    {% if site.instagram %}<a href="{{ site.instagram }}" target="_blank" rel="noopener">Instagram</a>{% endif %}
-    {% if site.youtube %}<a href="{{ site.youtube }}" target="_blank" rel="noopener">YouTube</a>{% endif %}
-    {% if site.tiktok %}<a href="{{ site.tiktok }}" target="_blank" rel="noopener">TikTok</a>{% endif %}
-    {% if site.whatsapp %}<a href="https://wa.me/{{ site.whatsapp }}" target="_blank" rel="noopener">WhatsApp</a>{% endif %}
+<footer id="contato" class="site-footer">
+  <div class="container footer-top">
+    <div>
+      <a class="brand brand-footer" href="{% url 'home' %}"><strong>ROSE<span>.</span></strong><small>FREITAS</small></a>
+      <p>Conteúdo, presença, estratégia e comunidade.</p>
+    </div>
+    <div class="footer-links">
+      {% if site.instagram %}<a href="{{ site.instagram }}" target="_blank" rel="noopener">Instagram</a>{% endif %}
+      {% if site.youtube %}<a href="{{ site.youtube }}" target="_blank" rel="noopener">YouTube</a>{% endif %}
+      {% if site.tiktok %}<a href="{{ site.tiktok }}" target="_blank" rel="noopener">TikTok</a>{% endif %}
+      {% if site.whatsapp %}<a href="https://wa.me/{{ site.whatsapp }}" target="_blank" rel="noopener">WhatsApp</a>{% endif %}
+    </div>
   </div>
-  <a class="admin-link" href="{% url 'dashboard' %}">Admin</a>
+  <div class="container footer-bottom">
+    <span>© Rose Freitas</span>
+    <a class="admin-link" href="{% url 'dashboard' %}">Acesso administrativo</a>
+  </div>
 </footer>
-<script>document.querySelectorAll('header nav a').forEach(a=>a.addEventListener('click',()=>document.body.classList.remove('menu-open')))</script>
+<script>document.querySelectorAll('.site-header nav a').forEach(a=>a.addEventListener('click',()=>document.body.classList.remove('menu-open')))</script>
 </body></html>
