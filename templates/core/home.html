@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Rose Freitas • Conteúdo, Cursos e VIP{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-content">
+    <span class="eyebrow">ROSE FREITAS</span>
+    <h1>{{ site.hero_title }}</h1>
+    <p>{{ site.hero_subtitle }}</p>
+    <div class="hero-actions">
+      <a class="btn gold" href="#cursos">{{ site.hero_button }}</a>
+      <a class="btn ghost" href="{% url 'customer_area' %}">Já sou aluna</a>
+    </div>
+  </div>
+  <div class="hero-card"><span>CONTEÚDO • ESTRATÉGIA • COMUNIDADE</span><strong>Transforme conhecimento em presença.</strong><p>Cursos práticos, conteúdos especiais e experiências VIP.</p></div>
+</section>
+
+{% if banners %}
+<section class="banner-grid">
+{% for b in banners %}
+<article class="promo" {% if b.image_url %}style="background-image:linear-gradient(90deg,rgba(5,5,5,.94),rgba(5,5,5,.5)),url('{{ b.image_url }}')"{% endif %}>
+  <div><span class="eyebrow">DESTAQUE</span><h2>{{ b.title }}</h2><p>{{ b.subtitle }}</p><a class="btn gold" href="{{ b.link }}">{{ b.button_text }}</a></div>
+</article>
+{% endfor %}
+</section>
+{% endif %}
+
+<section id="cursos" class="section">
+  <div class="section-head"><span class="eyebrow">APRENDA COM ESTRATÉGIA</span><h2>Cursos e produtos</h2><p>Conteúdos objetivos para aplicar no seu ritmo.</p></div>
+  <div class="cards">
+    {% for p in courses %}
+    <article class="card">
+      {% if p.featured %}<span class="badge">DESTAQUE</span>{% endif %}
+      <div class="card-kicker">CURSO</div><h3>{{ p.title }}</h3><p>{{ p.description|truncatechars:180 }}</p>
+      <div class="facts">{% if p.lessons %}<span>{{ p.lessons }} aulas</span>{% endif %}{% if p.bonus %}<span>{{ p.bonus }}</span>{% endif %}</div>
+      <div class="card-bottom"><strong>{% if p.price > 0 %}R$ {{ p.price }}{% else %}Consulte{% endif %}</strong><a class="btn small gold" href="{% url 'product_detail' p.slug %}">Ver detalhes</a></div>
+    </article>
+    {% empty %}<p>Nenhum curso publicado no momento.</p>{% endfor %}
+  </div>
+</section>
+
+<section id="vip" class="section alt">
+  <div class="section-head"><span class="eyebrow">MAIS PERTO DA COMUNIDADE</span><h2>Experiências VIP</h2><p>Escolha o canal e envie sua solicitação.</p></div>
+  <div class="cards">
+    {% for p in vips %}
+    <article class="card vip-card"><div class="card-kicker">VIP • {{ p.get_vip_channel_display|upper }}</div><h3>{{ p.title }}</h3><p>{{ p.description }}</p>
+      <a class="btn gold" href="{% url 'vip_request' p.slug %}">Quero participar</a>
+    </article>
+    {% empty %}<p>Nenhum VIP disponível.</p>{% endfor %}
+  </div>
+</section>
+
+<section id="agenda" class="section">
+  <div class="section-head"><span class="eyebrow">PRÓXIMOS PASSOS</span><h2>Agenda</h2></div>
+  <div class="timeline">
+    {% for item in agenda %}<article><time>{{ item.starts_at|date:"d/m/Y • H:i" }}</time><div><strong>{{ item.title }}</strong><p>{{ item.description }}</p></div></article>
+    {% empty %}<p>Novidades da agenda serão publicadas aqui.</p>{% endfor %}
+  </div>
+</section>
+
+<section class="cta-band">
+  <span class="eyebrow">PARCERIA E PUBLICIDADE</span><h2>Vamos criar algo juntos?</h2><p>Projetos, campanhas e oportunidades de parceria.</p>
+  {% if site.partnership_whatsapp %}<a class="btn gold" href="https://wa.me/{{ site.partnership_whatsapp }}?text=Olá%20Rose,%20quero%20falar%20sobre%20uma%20parceria." target="_blank">Falar sobre parceria</a>{% endif %}
+</section>
+{% endblock %}
