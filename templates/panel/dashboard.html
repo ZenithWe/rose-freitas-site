@@ -1,0 +1,13 @@
+{% extends "panel/base.html" %}{% block heading %}Dashboard{% endblock %}{% block panel_content %}
+<div class="stat-grid">
+<article><small>FATURAMENTO CONFIRMADO</small><strong>R$ {{ revenue }}</strong></article>
+<article><small>SALDO ESTIMADO</small><strong>R$ {{ balance }}</strong></article>
+<article><small>PEDIDOS</small><strong>{{ orders_count }}</strong></article>
+<article><small>VIP PENDENTES</small><strong>{{ vip_pending }}</strong></article>
+<article><small>CLIENTES COM ACESSO</small><strong>{{ customers_count }}</strong></article>
+<article><small>DESPESAS</small><strong>R$ {{ expenses }}</strong></article>
+</div>
+<div class="panel-grid two">
+<section class="panel-card"><div class="panel-card-head"><h2>Últimos pedidos</h2><a href="{% url 'panel_orders' %}">Ver todos</a></div><div class="table-wrap"><table><thead><tr><th>Cliente</th><th>Produto</th><th>Status</th><th>Total</th></tr></thead><tbody>{% for o in latest_orders %}<tr><td>{{ o.customer_name }}</td><td>{{ o.product.title }}</td><td><span class="status {{ o.status }}">{{ o.get_status_display }}</span></td><td>R$ {{ o.total }}</td></tr>{% empty %}<tr><td colspan="4">Nenhum pedido ainda.</td></tr>{% endfor %}</tbody></table></div></section>
+<section class="panel-card"><div class="panel-card-head"><h2>Solicitações VIP</h2><a href="{% url 'panel_vip' %}">Gerenciar</a></div><div class="mini-list">{% for i in latest_vip %}<div><span><strong>{{ i.full_name }}</strong><small>{{ i.get_channel_display }} • {{ i.created_at|date:"d/m H:i" }}</small></span><span class="status {{ i.status }}">{{ i.get_status_display }}</span></div>{% empty %}<p>Nenhuma solicitação.</p>{% endfor %}</div></section>
+</div>{% endblock %}
