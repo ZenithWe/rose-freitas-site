@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Solicitação recebida • Rose Freitas{% endblock %}
+{% block content %}
+<section class="form-shell center">
+  <div class="success-icon">✓</div><span class="eyebrow">SOLICITAÇÃO RECEBIDA</span><h1>Pronto, {{ item.full_name }}.</h1>
+  <p>Sua solicitação para o VIP {{ item.get_channel_display }} foi registrada. A equipe poderá confirmar ou cancelar pelo painel administrativo.</p>
+  {% if site.pix_key %}<div class="pix-box"><small>CHAVE PIX</small><strong>{{ site.pix_key }}</strong>{% if site.pix_name %}<span>{{ site.pix_name }}</span>{% endif %}</div>{% endif %}
+  {% if site.whatsapp %}<a class="btn gold" target="_blank" href="https://wa.me/{{ site.whatsapp }}?text=Olá,%20sou%20{{ item.full_name|urlencode }}.%20Acabei%20de%20fazer%20minha%20solicitação%20para%20o%20VIP%20{{ item.get_channel_display|urlencode }}.">Enviar comprovante pelo WhatsApp</a>{% endif %}
+</section>
+{% endblock %}
