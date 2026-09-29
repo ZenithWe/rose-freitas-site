@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}{{ product.title }} • Rose Freitas{% endblock %}
+{% block content %}
+<section class="detail-shell">
+  <a class="back" href="{% url 'home' %}#cursos">← Voltar</a>
+  <div class="detail-grid">
+    <div><span class="eyebrow">{{ product.get_kind_display|upper }}</span><h1>{{ product.title }}</h1><p class="lead">{{ product.description }}</p>
+      <div class="facts big">{% if product.lessons %}<span>{{ product.lessons }} aulas</span>{% endif %}{% if product.bonus %}<span>{{ product.bonus }}</span>{% endif %}</div>
+    </div>
+    <aside class="purchase-card"><small>INVESTIMENTO</small><strong>{% if product.price > 0 %}R$ {{ product.price }}{% else %}Consulte{% endif %}</strong>
+      {% if product.checkout_url %}<a class="btn gold full" href="{{ product.checkout_url }}" target="_blank" rel="noopener">Inscreva-se</a>{% else %}<a class="btn gold full" href="#contato">Quero saber mais</a>{% endif %}
+      <a class="btn ghost full" href="{% url 'customer_area' %}">Rever os conteúdos</a>
+    </aside>
+  </div>
+</section>
+{% endblock %}
