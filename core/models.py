@@ -78,9 +78,11 @@ class VipRequest(models.Model):
     class Meta: ordering=["-created_at"]
     def __str__(self): return f"{self.full_name} • {self.get_channel_display()}"
 
+def order_token(): return secrets.token_urlsafe(24)
+
 class Order(models.Model):
     STATUSES=[("pending","Aguardando"),("paid","Confirmado"),("cancelled","Cancelado"),("refunded","Reembolsado")]
-    token=models.CharField(max_length=64,unique=True,editable=False,default=lambda:secrets.token_urlsafe(24))
+    token=models.CharField(max_length=64,unique=True,editable=False,default=order_token)
     product=models.ForeignKey(Product,on_delete=models.PROTECT,related_name="orders")
     customer_name=models.CharField(max_length=160)
     email=models.EmailField()
@@ -118,3 +120,12 @@ class Expense(models.Model):
     created_at=models.DateTimeField(auto_now_add=True)
     class Meta: ordering=["-date","-id"]
     def __str__(self): return self.description
+
+
+class CustomerLoginCode(models.Model):
+    email=models.EmailField(db_index=True)
+    code_hash=models.CharField(max_length=255)
+    expires_at=models.DateTimeField()
+    used=models.BooleanField(default=False)
+    created_at=models.DateTimeField(auto_now_add=True)
+    class Meta: ordering=["-created_at"]
