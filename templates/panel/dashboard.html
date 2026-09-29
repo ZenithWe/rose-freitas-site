@@ -1,13 +1,102 @@
-{% extends "panel/base.html" %}{% block heading %}Dashboard{% endblock %}{% block panel_content %}
-<div class="stat-grid">
-<article><small>FATURAMENTO CONFIRMADO</small><strong>R$ {{ revenue }}</strong></article>
-<article><small>SALDO ESTIMADO</small><strong>R$ {{ balance }}</strong></article>
-<article><small>PEDIDOS</small><strong>{{ orders_count }}</strong></article>
-<article><small>VIP PENDENTES</small><strong>{{ vip_pending }}</strong></article>
-<article><small>CLIENTES COM ACESSO</small><strong>{{ customers_count }}</strong></article>
-<article><small>DESPESAS</small><strong>R$ {{ expenses }}</strong></article>
+{% extends "panel/base.html" %}
+{% block heading %}Visão geral{% endblock %}
+{% block page_heading %}{% endblock %}
+{% block panel_content %}
+<div class="page-heading">
+  <div>
+    <p class="eyebrow">SEU NEGÓCIO, EM NÚMEROS</p>
+    <h1>Visão geral</h1>
+    <p>Acompanhe cursos, clientes, pedidos e comunidade VIP em um só lugar.</p>
+  </div>
+  <a class="btn btn-primary" href="{% url 'panel_product_new' %}"><span>＋</span>Novo produto</a>
 </div>
-<div class="panel-grid two">
-<section class="panel-card"><div class="panel-card-head"><h2>Últimos pedidos</h2><a href="{% url 'panel_orders' %}">Ver todos</a></div><div class="table-wrap"><table><thead><tr><th>Cliente</th><th>Produto</th><th>Status</th><th>Total</th></tr></thead><tbody>{% for o in latest_orders %}<tr><td>{{ o.customer_name }}</td><td>{{ o.product.title }}</td><td><span class="status {{ o.status }}">{{ o.get_status_display }}</span></td><td>R$ {{ o.total }}</td></tr>{% empty %}<tr><td colspan="4">Nenhum pedido ainda.</td></tr>{% endfor %}</tbody></table></div></section>
-<section class="panel-card"><div class="panel-card-head"><h2>Solicitações VIP</h2><a href="{% url 'panel_vip' %}">Gerenciar</a></div><div class="mini-list">{% for i in latest_vip %}<div><span><strong>{{ i.full_name }}</strong><small>{{ i.get_channel_display }} • {{ i.created_at|date:"d/m H:i" }}</small></span><span class="status {{ i.status }}">{{ i.get_status_display }}</span></div>{% empty %}<p>Nenhuma solicitação.</p>{% endfor %}</div></section>
-</div>{% endblock %}
+
+<div class="stat-grid dashboard-stats">
+  <article class="stat-card">
+    <div><span>Receita confirmada</span><span class="stat-icon">R$</span></div>
+    <strong>R$ {{ revenue }}</strong>
+    <small>Total dos pedidos confirmados</small>
+  </article>
+  <article class="stat-card">
+    <div><span>Pedidos</span><span class="stat-icon">≡</span></div>
+    <strong>{{ orders_count }}</strong>
+    <small>Todos os pedidos registrados</small>
+  </article>
+  <article class="stat-card">
+    <div><span>VIP pendentes</span><span class="stat-icon">★</span></div>
+    <strong>{{ vip_pending }}</strong>
+    <small>Solicitações aguardando análise</small>
+  </article>
+  <article class="stat-card balance-stat">
+    <div><span>Saldo registrado</span><span class="stat-icon">R$</span></div>
+    <strong>R$ {{ balance }}</strong>
+    <small>Receita confirmada menos despesas</small>
+  </article>
+</div>
+
+<div class="commercial-stat-grid">
+  <article class="stat-card">
+    <div><span>Clientes com acesso</span><span class="stat-icon">●</span></div>
+    <strong>{{ customers_count }}</strong>
+    <small>E-mails com conteúdo liberado</small>
+  </article>
+  <article class="stat-card">
+    <div><span>Despesas</span><span class="stat-icon">↓</span></div>
+    <strong>R$ {{ expenses }}</strong>
+    <small>Lançamentos registrados no financeiro</small>
+  </article>
+  <article class="stat-card">
+    <div><span>Operação</span><span class="stat-icon">✓</span></div>
+    <strong>Online</strong>
+    <small>Site, painel e banco conectados</small>
+  </article>
+</div>
+
+<div class="dashboard-middle">
+  <section class="surface">
+    <div class="surface-heading">
+      <div><h2>Pedidos recentes</h2><p>Últimas movimentações registradas no site.</p></div>
+      <a class="btn btn-light btn-sm" href="{% url 'panel_orders' %}">Ver todos</a>
+    </div>
+    {% if latest_orders %}
+    <div class="table-wrap"><table><thead><tr><th>Cliente</th><th>Produto</th><th>Valor</th><th>Situação</th></tr></thead><tbody>
+      {% for o in latest_orders %}
+      <tr><td><strong>{{ o.customer_name }}</strong><small>{{ o.email }}</small></td><td>{{ o.product.title }}</td><td><strong>R$ {{ o.total }}</strong></td><td><span class="status {{ o.status }}">{{ o.get_status_display }}</span></td></tr>
+      {% endfor %}
+    </tbody></table></div>
+    {% else %}
+    <div class="empty-state compact"><div class="empty-symbol">≡</div><h3>Nenhum pedido por enquanto</h3><p>Os pedidos aparecerão aqui quando forem cadastrados.</p></div>
+    {% endif %}
+  </section>
+
+  <section class="surface vip-overview">
+    <div class="surface-heading">
+      <div><h2>Solicitações VIP</h2><p>WhatsApp e Telegram.</p></div>
+      <a class="square-action" href="{% url 'panel_vip' %}">★</a>
+    </div>
+    {% for i in latest_vip %}
+    <a class="mini-event" href="{% url 'panel_vip' %}?canal={{ i.channel }}">
+      <div class="date-tile"><strong>{{ i.created_at|date:"d" }}</strong><span>{{ i.created_at|date:"M"|upper }}</span></div>
+      <div><strong>{{ i.full_name }}</strong><small>{{ i.get_channel_display }} • {{ i.phone }}</small></div>
+      <span class="status {{ i.status }}">{{ i.get_status_display }}</span>
+    </a>
+    {% empty %}
+    <div class="empty-state compact"><div class="empty-symbol">★</div><h3>Nenhuma solicitação VIP</h3><p>Novos pedidos de entrada aparecerão aqui.</p></div>
+    {% endfor %}
+  </section>
+</div>
+
+<section class="surface dashboard-quick">
+  <div class="surface-heading">
+    <div><h2>Atalhos de gestão</h2><p>Acesse rapidamente as áreas mais usadas.</p></div>
+  </div>
+  <div class="quick-grid">
+    <a href="{% url 'panel_products' %}"><span>◆</span><strong>Cursos e produtos</strong><small>Cadastre, edite e publique ofertas.</small></a>
+    <a href="{% url 'panel_customers' %}"><span>●</span><strong>Clientes</strong><small>Libere e acompanhe acessos.</small></a>
+    <a href="{% url 'panel_banners' %}"><span>▣</span><strong>Banners</strong><small>Atualize os destaques do site.</small></a>
+    <a href="{% url 'panel_finance' %}"><span>R$</span><strong>Financeiro</strong><small>Receita, despesas e saldo.</small></a>
+  </div>
+</section>
+
+<p class="financial-note">ⓘ O saldo é um controle interno do painel. Ele não consulta nem movimenta sua conta bancária.</p>
+{% endblock %}
