@@ -2,64 +2,125 @@
 {% block title %}Rose Freitas • Conteúdo, Cursos e VIP{% endblock %}
 {% block content %}
 <section class="hero">
-  <div class="hero-glow"></div>
-  <div class="hero-content">
-    <span class="eyebrow">ROSE FREITAS</span>
-    <h1>{{ site.hero_title }}</h1>
-    <p>{{ site.hero_subtitle }}</p>
-    <div class="hero-actions">
-      <a class="btn gold" href="#cursos">{{ site.hero_button }}</a>
-      <a class="btn ghost" href="{% url 'customer_area' %}">Já sou aluna</a>
+  <div class="hero-backdrop"></div>
+  <div class="container hero-inner">
+    <div class="hero-copy">
+      <div class="eyebrow light"><span></span>ROSE FREITAS</div>
+      <h1>{{ site.hero_title }}</h1>
+      <p>{{ site.hero_subtitle }}</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="#cursos">{{ site.hero_button }}</a>
+        <a class="hero-secondary" href="{% url 'customer_area' %}">Já sou aluna →</a>
+      </div>
     </div>
+    <aside class="hero-editorial">
+      <div class="editorial-number">01</div>
+      <div>
+        <span>CONTEÚDO • ESTRATÉGIA • COMUNIDADE</span>
+        <strong>Transforme conhecimento em presença.</strong>
+        <p>Cursos práticos, conteúdos especiais e experiências mais próximas da comunidade.</p>
+      </div>
+    </aside>
   </div>
-  <div class="hero-card"><span>CONTEÚDO • ESTRATÉGIA • COMUNIDADE</span><strong>Transforme conhecimento em presença.</strong><p>Cursos práticos, conteúdos especiais e experiências VIP.</p></div>
+  <div class="container hero-bottom">
+    <span>CONTEÚDO AUTORAL • CURSOS • VIP</span>
+    <span class="hero-line"></span>
+    <span>ROSE FREITAS</span>
+  </div>
 </section>
 
+<div class="brand-strip">
+  <div class="container">
+    <span>APRENDA</span><span class="strip-mark">R<span>/</span>F</span><span>COMUNIQUE</span><span>CRIE</span><span>EVOLUA</span>
+  </div>
+</div>
+
 {% if banners %}
-<section class="banner-grid">
-{% for b in banners %}
-<article class="promo" {% if b.image_url %}style="background-image:linear-gradient(90deg,rgba(5,5,5,.94),rgba(5,5,5,.5)),url('{{ b.image_url }}')"{% endif %}>
-  <div><span class="eyebrow">DESTAQUE</span><h2>{{ b.title }}</h2><p>{{ b.subtitle }}</p><a class="btn gold" href="{{ b.link }}">{{ b.button_text }}</a></div>
-</article>
-{% endfor %}
+<section class="section section-light">
+  <div class="container">
+    <div class="section-heading">
+      <div><div class="eyebrow">EM DESTAQUE</div><h2>Novidades da Rose</h2></div>
+      <p class="section-intro">Conteúdos, lançamentos e experiências selecionadas.</p>
+    </div>
+    <div class="feature-stack">
+      {% for b in banners %}
+      <article class="promo" {% if b.image_url %}style="background-image:linear-gradient(90deg,rgba(8,8,8,.96),rgba(8,8,8,.38)),url('{{ b.image_url }}')"{% endif %}>
+        <div><span class="overline">DESTAQUE</span><h3>{{ b.title }}</h3><p>{{ b.subtitle }}</p><a class="btn btn-primary" href="{{ b.link }}">{{ b.button_text }}</a></div>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
 </section>
 {% endif %}
 
-<section id="cursos" class="section">
-  <div class="section-head"><span class="eyebrow">APRENDA COM ESTRATÉGIA</span><h2>Cursos e produtos</h2><p>Conteúdos objetivos para aplicar no seu ritmo.</p></div>
-  <div class="cards">
-    {% for p in courses %}
-    <article class="card">
-      {% if p.featured %}<span class="badge">DESTAQUE</span>{% endif %}
-      <div class="card-kicker">CURSO</div><h3>{{ p.title }}</h3><p>{{ p.description|truncatechars:180 }}</p>
-      <div class="facts">{% if p.lessons %}<span>{{ p.lessons }} aulas</span>{% endif %}{% if p.bonus %}<span>{{ p.bonus }}</span>{% endif %}</div>
-      <div class="card-bottom"><strong>{% if p.price > 0 %}R$ {{ p.price }}{% else %}Consulte{% endif %}</strong><a class="btn small gold" href="{% url 'product_detail' p.slug %}">Ver detalhes</a></div>
-    </article>
-    {% empty %}<p>Nenhum curso publicado no momento.</p>{% endfor %}
+<section id="cursos" class="section section-light">
+  <div class="container">
+    <div class="section-heading">
+      <div><div class="eyebrow">APRENDA COM ESTRATÉGIA</div><h2>Cursos e produtos</h2></div>
+      <p class="section-intro">Conteúdos objetivos, organizados para você aplicar no seu ritmo.</p>
+    </div>
+    <div class="course-grid">
+      {% for p in courses %}
+      <article class="course-card">
+        {% if p.cover_url %}<div class="course-cover"><img src="{{ p.cover_url }}" alt="{{ p.title }}" loading="lazy"></div>{% else %}<div class="course-cover course-cover-placeholder"><span>ROSE / FREITAS</span></div>{% endif %}
+        <div class="course-body">
+          <div class="course-meta"><span>CURSO</span>{% if p.featured %}<strong>DESTAQUE</strong>{% endif %}</div>
+          <h3>{{ p.title }}</h3>
+          <p>{{ p.description|truncatechars:180 }}</p>
+          <div class="course-facts">{% if p.lessons %}<span>{{ p.lessons }} aulas</span>{% endif %}{% if p.bonus %}<span>{{ p.bonus }}</span>{% endif %}</div>
+          <div class="course-bottom">
+            <div><small>Investimento</small><strong>{% if p.price > 0 %}R$ {{ p.price }}{% else %}Consulte{% endif %}</strong></div>
+            <a class="btn btn-dark btn-sm" href="{% url 'product_detail' p.slug %}">Ver detalhes</a>
+          </div>
+        </div>
+      </article>
+      {% empty %}<p>Nenhum curso publicado no momento.</p>{% endfor %}
+    </div>
   </div>
 </section>
 
-<section id="vip" class="section alt">
-  <div class="section-head"><span class="eyebrow">MAIS PERTO DA COMUNIDADE</span><h2>Experiências VIP</h2><p>Escolha o canal e envie sua solicitação.</p></div>
-  <div class="cards">
-    {% for p in vips %}
-    <article class="card vip-card"><div class="card-kicker">VIP • {{ p.get_vip_channel_display|upper }}</div><h3>{{ p.title }}</h3><p>{{ p.description }}</p>
-      <a class="btn gold" href="{% url 'vip_request' p.slug %}">Quero participar</a>
-    </article>
-    {% empty %}<p>Nenhum VIP disponível.</p>{% endfor %}
+<section id="vip" class="vip-section">
+  <div class="container vip-grid">
+    <div class="vip-intro">
+      <div class="eyebrow light"><span></span>MAIS PERTO DA COMUNIDADE</div>
+      <h2>Experiências VIP</h2>
+      <p>Conteúdos, conversas e experiências em canais exclusivos da comunidade.</p>
+      <small>Escolha o canal que faz mais sentido para você.</small>
+    </div>
+    <div class="vip-list">
+      {% for p in vips %}
+      <article class="vip-row">
+        <div class="vip-index">0{{ forloop.counter }}</div>
+        <div><span>{{ p.get_vip_channel_display|upper }}</span><h3>{{ p.title }}</h3><p>{{ p.description }}</p></div>
+        <a href="{% url 'vip_request' p.slug %}" aria-label="Quero participar de {{ p.title }}">→</a>
+      </article>
+      {% empty %}<p>Nenhum VIP disponível.</p>{% endfor %}
+    </div>
   </div>
 </section>
 
-<section id="agenda" class="section">
-  <div class="section-head"><span class="eyebrow">PRÓXIMOS PASSOS</span><h2>Agenda</h2></div>
-  <div class="timeline">
-    {% for item in agenda %}<article><time>{{ item.starts_at|date:"d/m/Y • H:i" }}</time><div><strong>{{ item.title }}</strong><p>{{ item.description }}</p></div></article>
-    {% empty %}<p>Novidades da agenda serão publicadas aqui.</p>{% endfor %}
+<section id="agenda" class="section section-light">
+  <div class="container">
+    <div class="section-heading">
+      <div><div class="eyebrow">PRÓXIMOS PASSOS</div><h2>Agenda</h2></div>
+      <p class="section-intro">Lives, lançamentos e datas importantes.</p>
+    </div>
+    <div class="agenda-list">
+      {% for item in agenda %}
+      <article class="agenda-item">
+        <time><strong>{{ item.starts_at|date:"d" }}</strong><span>{{ item.starts_at|date:"M"|upper }}</span><small>{{ item.starts_at|date:"Y" }}</small></time>
+        <div><span class="agenda-time">{{ item.starts_at|date:"H:i" }}</span><h3>{{ item.title }}</h3><p>{{ item.description }}</p></div>
+        <span class="agenda-arrow">→</span>
+      </article>
+      {% empty %}<div class="agenda-empty">Novidades da agenda serão publicadas aqui.</div>{% endfor %}
+    </div>
   </div>
 </section>
 
-<section class="cta-band">
-  <span class="eyebrow">PARCERIA E PUBLICIDADE</span><h2>Vamos criar algo juntos?</h2><p>Projetos, campanhas e oportunidades de parceria.</p>
-  {% if site.partnership_whatsapp %}<a class="btn gold" href="https://wa.me/{{ site.partnership_whatsapp }}?text=Olá%20Rose,%20quero%20falar%20sobre%20uma%20parceria." target="_blank">Falar sobre parceria</a>{% endif %}
+<section class="partnership-section">
+  <div class="container partnership-inner">
+    <div><div class="eyebrow light"><span></span>PARCERIA E PUBLICIDADE</div><h2>Vamos criar algo juntos?</h2><p>Projetos, campanhas e oportunidades de parceria com a Rose.</p></div>
+    {% if site.partnership_whatsapp %}<a class="btn btn-white" href="https://wa.me/{{ site.partnership_whatsapp }}?text=Olá%20Rose,%20quero%20falar%20sobre%20uma%20parceria." target="_blank">Falar sobre parceria</a>{% endif %}
+  </div>
 </section>
 {% endblock %}
