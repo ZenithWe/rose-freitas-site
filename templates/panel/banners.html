@@ -1,2 +1,16 @@
-{% extends "panel/base.html" %}{% block heading %}Banners{% endblock %}{% block panel_content %}
-<div class="panel-actions"><p>Controle os destaques da página inicial.</p><a class="btn gold small" href="{% url 'panel_banner_new' %}">+ Novo banner</a></div><section class="panel-card"><div class="table-wrap"><table><thead><tr><th>Título</th><th>Botão</th><th>Ordem</th><th>Status</th><th></th></tr></thead><tbody>{% for i in items %}<tr><td>{{ i.title }}</td><td>{{ i.button_text }}</td><td>{{ i.position }}</td><td>{% if i.active %}<span class="status confirmed">Ativo</span>{% else %}<span class="status cancelled">Oculto</span>{% endif %}</td><td><a href="{% url 'panel_banner_edit' i.pk %}">Editar</a></td></tr>{% empty %}<tr><td colspan="5">Nenhum banner.</td></tr>{% endfor %}</tbody></table></div></section>{% endblock %}
+{% extends "panel/base.html" %}
+{% block title %}Banners • Rose Freitas{% endblock %}
+{% block eyebrow %}A primeira impressão{% endblock %}
+{% block heading %}Banners{% endblock %}
+{% block description %}Escolha os destaques que recebem quem chega ao seu site.{% endblock %}
+{% block page_action %}<a class="panel-button panel-button-primary" href="{% url 'panel_banner_new' %}">{% include "panel/icon.html" with icon="plus" %}Novo banner</a>{% endblock %}
+{% block panel_content %}
+<section class="panel-surface panel-list-surface" data-panel-list>
+  {% if items %}{% include "panel/table_tools.html" with search_label="Buscar título, botão ou situação" %}
+  <div class="panel-table-wrap"><table class="panel-table"><caption class="panel-sr-only">Destaques da página inicial, por ordem de exibição</caption><thead><tr><th scope="col">Destaque</th><th scope="col">Botão / destino</th><th scope="col">Ordem</th><th scope="col">Situação</th><th scope="col">Ações</th></tr></thead><tbody>
+    {% for i in items %}<tr data-record data-search="{{ i.title }} {{ i.button_text }} {% if i.active %}ativo{% else %}oculto{% endif %}"><td data-label="Destaque"><div class="panel-product-cell"><span class="panel-product-cover panel-banner-cover">{% include "panel/icon.html" with icon="image" %}{% if i.image_url %}<img src="{{ i.image_url }}" alt="" loading="lazy" data-panel-image>{% endif %}</span><div><strong>{{ i.title }}</strong>{% if i.subtitle %}<small>{{ i.subtitle|truncatechars:100 }}</small>{% endif %}</div></div></td><td data-label="Botão / destino"><strong>{{ i.button_text }}</strong><small class="panel-break">{{ i.link }}</small></td><td data-label="Ordem"><span class="panel-order-number">{{ i.position }}</span></td><td data-label="Situação">{% if i.active %}<span class="panel-status confirmed">Ativo</span>{% else %}<span class="panel-status cancelled">Oculto</span>{% endif %}</td><td data-label="Ações"><a class="panel-row-link" href="{% url 'panel_banner_edit' i.pk %}" aria-label="Editar {{ i.title }}">Editar{% include "panel/icon.html" with icon="arrow" %}</a></td></tr>{% endfor %}
+  </tbody></table></div>{% include "panel/no_results.html" %}
+  {% else %}<div class="panel-empty"><span class="panel-empty-icon">{% include "panel/icon.html" with icon="image" %}</span><h3>Dê destaque ao que vem a seguir.</h3><p>Crie um banner para apresentar uma oferta ou novidade na página inicial.</p><a class="panel-button panel-button-primary" href="{% url 'panel_banner_new' %}">{% include "panel/icon.html" with icon="plus" %}Criar primeiro banner</a></div>{% endif %}
+</section>
+<p class="panel-footnote">{% include "panel/icon.html" with icon="info" %}Os banners ativos aparecem no site em ordem crescente. A ordem é definida no cadastro de cada banner.</p>
+{% endblock %}

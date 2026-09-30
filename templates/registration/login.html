@@ -1,3 +1,33 @@
 {% load static %}
-<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Entrar • Rose Freitas</title><link rel="stylesheet" href="{% static 'css/style.css' %}"></head>
-<body class="login-body"><div class="login-box"><a class="brand" href="{% url 'home' %}"><span>ROSE</span> FREITAS</a><span class="eyebrow">ÁREA ADMINISTRATIVA</span><h1>Entrar no painel</h1>{% if form.errors %}<div class="flash error">Usuário ou senha inválidos.</div>{% endif %}<form method="post">{% csrf_token %}<label>Usuário</label><input class="form-control" type="text" name="username" autofocus required><label>Senha</label><input class="form-control" type="password" name="password" required><button class="btn gold full" type="submit">Entrar</button></form><a class="back" href="{% url 'home' %}">← Voltar para o site</a></div></body></html>
+<!doctype html>
+<html lang="pt-BR">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#0b0c0d"><meta name="robots" content="noindex, nofollow"><title>Entrar no painel • Rose Freitas</title><link rel="icon" href="{% static 'img/favicon.svg' %}" type="image/svg+xml"><link rel="stylesheet" href="{% static 'css/style.css' %}"><link rel="stylesheet" href="{% static 'css/panel.css' %}"><script src="{% static 'js/panel.js' %}" defer></script></head>
+<body class="panel-body panel-login-body">
+  <a class="panel-skip" href="#login-form">Ir para o formulário</a>
+  <main class="panel-login-layout">
+    <section class="panel-login-story" aria-label="Rose Freitas, estúdio de gestão">
+      <a class="panel-brand" href="{% url 'home' %}" aria-label="Rose Freitas — voltar ao site"><span class="panel-brand-name">rose<span>.</span></span><span class="panel-brand-caption">FREITAS <span>ESTÚDIO DE GESTÃO</span></span></a>
+      <div class="panel-login-editorial"><p class="panel-eyebrow">Presença. Estratégia. Conexão.</p><h1>O seu propósito.<br><em>A sua próxima conquista.</em></h1><p>Um espaço para cuidar dos seus conteúdos, acompanhar o negócio e aproximar sua comunidade.</p></div>
+      <span class="panel-login-signature">Rose Freitas <span>Conteúdo que conecta.</span></span>
+      <div class="panel-login-art" aria-hidden="true"><span></span><span></span><span></span></div>
+    </section>
+    <section class="panel-login-access" aria-labelledby="login-title">
+      <div class="panel-login-card">
+        <span class="panel-login-mark">{% include "panel/icon.html" with icon="shield" %}</span>
+        <p class="panel-eyebrow">Área administrativa</p><h2 id="login-title">Bem-vinda ao<br>seu estúdio.</h2><p class="panel-login-description">Entre com suas credenciais para continuar.</p>
+        {% if form.errors %}<div class="panel-message error" id="login-error" role="alert">{% include "panel/icon.html" with icon="info" %}<span>{% if form.non_field_errors %}{{ form.non_field_errors|striptags }}{% else %}Confira seu usuário e sua senha para continuar.{% endif %}</span></div>{% endif %}
+        {% if next and request.user.is_authenticated %}<div class="panel-message" role="status">Esta conta não tem permissão para acessar a página solicitada.</div>{% endif %}
+        <form method="post" id="login-form" class="panel-login-form">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="{{ next }}">
+          <div class="panel-field"><label for="id_username">Usuário</label><input class="form-control" type="text" name="username" id="id_username" autocomplete="username" autocapitalize="none" spellcheck="false" value="{{ form.username.value|default_if_none:'' }}" autofocus required {% if form.errors %}aria-describedby="login-error"{% endif %}>{% if form.username.errors %}<ul class="panel-field-errors">{% for error in form.username.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}</div>
+          <div class="panel-field"><label for="id_password">Senha</label><div class="panel-password-wrap"><input class="form-control" type="password" name="password" id="id_password" autocomplete="current-password" required {% if form.errors %}aria-describedby="login-error"{% endif %}><button class="panel-password-toggle icon-button" type="button" data-password-toggle aria-controls="id_password" aria-label="Mostrar senha" aria-pressed="false" hidden><span data-password-show>{% include "panel/icon.html" with icon="eye" %}</span><span data-password-hide hidden>{% include "panel/icon.html" with icon="eye-off" %}</span></button></div>{% if form.password.errors %}<ul class="panel-field-errors">{% for error in form.password.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}</div>
+          <button class="panel-button panel-button-primary panel-button-full" type="submit">Entrar no painel{% include "panel/icon.html" with icon="arrow" %}</button>
+        </form>
+        <a class="panel-login-back panel-text-link" href="{% url 'home' %}">{% include "panel/icon.html" with icon="arrow-left" %}Voltar para o site</a>
+      </div>
+      <p class="panel-login-footer">Rose Freitas <span>·</span> Acesso administrativo</p>
+    </section>
+  </main>
+</body>
+</html>

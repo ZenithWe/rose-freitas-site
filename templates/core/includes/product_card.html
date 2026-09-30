@@ -1,0 +1,25 @@
+<article class="course-card" data-catalog-card data-title="{{ p.title|lower }}" data-kind="{{ p.kind }}">
+  <a class="course-cover{% if not p.cover_url %} course-typographic{% endif %}" href="{% url 'product_detail' p.slug %}" tabindex="-1" aria-hidden="true">
+    {% if p.cover_url %}<img src="{{ p.cover_url }}" alt="" loading="lazy" decoding="async" width="640" height="440">{% else %}<span class="cover-brand">ROSE FREITAS</span>
+<span class="cover-title">{{ p.title }}</span>
+<span class="cover-bottom">{{ p.get_kind_display }} <span>RF.</span>
+</span>{% endif %}
+    {% if p.featured %}<span class="cover-badge">Em destaque</span>{% endif %}
+  </a>
+  <div class="course-body">
+<span class="eyebrow">{{ p.get_kind_display }}</span>
+<h3>
+<a href="{% url 'product_detail' p.slug %}">{{ p.title }}</a>
+</h3>
+<p>{{ p.description|truncatechars:170 }}</p>
+    <div class="course-facts">{% if p.lessons %}<span>{% include 'core/includes/icon.html' with name='play' %} {{ p.lessons }} aulas</span>{% endif %}{% if p.bonus %}<span>{{ p.bonus }}</span>{% endif %}</div>
+    <div class="course-bottom">
+<div>
+<small>Investimento</small>
+<strong>{% if p.price > 0 %}R$ {{ p.price|floatformat:2 }}{% else %}Consulte{% endif %}</strong>
+</div>
+<a class="btn btn-outline btn-sm" href="{% url 'product_detail' p.slug %}">Ver detalhes <span class="sr-only">de {{ p.title }}</span>
+</a>
+</div>
+  </div>
+</article>

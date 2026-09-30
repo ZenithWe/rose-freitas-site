@@ -1,10 +1,31 @@
 {% extends "base.html" %}
 {% block title %}Solicitação recebida • Rose Freitas{% endblock %}
-{% block content %}
-<section class="form-shell center">
-  <div class="success-icon">✓</div><span class="eyebrow">SOLICITAÇÃO RECEBIDA</span><h1>Pronto, {{ item.full_name }}.</h1>
-  <p>Sua solicitação para o VIP {{ item.get_channel_display }} foi registrada. A equipe poderá confirmar ou cancelar pelo painel administrativo.</p>
-  {% if site.pix_key %}<div class="pix-box"><small>CHAVE PIX</small><strong>{{ site.pix_key }}</strong>{% if site.pix_name %}<span>{{ site.pix_name }}</span>{% endif %}</div>{% endif %}
-  {% if site.whatsapp %}<a class="btn gold" target="_blank" href="https://wa.me/{{ site.whatsapp }}?text=Olá,%20sou%20{{ item.full_name|urlencode }}.%20Acabei%20de%20fazer%20minha%20solicitação%20para%20o%20VIP%20{{ item.get_channel_display|urlencode }}.">Enviar comprovante pelo WhatsApp</a>{% endif %}
-</section>
-{% endblock %}
+{% block extra_head %}<meta name="robots" content="noindex, nofollow">{% endblock %}
+{% block content %}<section class="section">
+<div class="container receipt-shell">
+<div class="receipt-intro">
+<span class="success-icon">{% include 'core/includes/icon.html' with name='check' %}</span>
+<span class="eyebrow">SOLICITAÇÃO RECEBIDA</span>
+<h1>Obrigada,<br>{{ item.full_name }}<span>.</span>
+</h1>
+<p>Sua solicitação para o VIP {{ item.get_channel_display }} foi registrada. Siga as orientações abaixo e aguarde a confirmação da equipe.</p>
+<div class="receipt-status">
+<span class="status pending">Aguardando confirmação</span>
+<span>Solicitação #{{ item.pk }}</span>
+</div>
+</div>
+<div class="form-card receipt-card">
+<h2>Seus próximos passos.</h2>{% if product and product.price > 0 %}<div class="receipt-line">
+<span>Investimento em {{ product.title }}</span>
+<strong>R$ {{ product.price|floatformat:2 }}</strong>
+</div>{% endif %}{% if site.pix_key %}<p>Se o seu acesso exige pagamento, confira as condições com a equipe e utilize a chave Pix abaixo.</p>
+<div class="pix-box">
+<span class="eyebrow">CHAVE PIX</span>
+<strong id="pix-key">{{ site.pix_key }}</strong>{% if site.pix_name %}<span>{{ site.pix_name }}</span>{% endif %}<button class="btn btn-outline btn-sm" type="button" data-copy-pix data-copy-target="pix-key">{% include 'core/includes/icon.html' with name='copy' %} Copiar chave</button>
+<span data-copy-status role="status" aria-live="polite">
+</span>
+</div>{% endif %}{% if site.whatsapp %}<p>Fale com a equipe para acompanhar a solicitação{% if site.pix_key %} e enviar o comprovante, quando necessário{% endif %}.</p>
+<a class="btn btn-primary full" target="_blank" rel="noopener noreferrer" href="https://wa.me/{{ site.whatsapp }}?text=Olá,%20sou%20{{ item.full_name|urlencode }}.%20Acabei%20de%20fazer%20minha%20solicitação%20para%20o%20VIP%20{{ item.get_channel_display|urlencode }}.%20Solicitação%20%23{{ item.pk }}.">{% if site.pix_key %}Enviar comprovante pelo WhatsApp{% else %}Acompanhar pelo WhatsApp{% endif %}</a>{% else %}<p>A equipe acompanhará os dados que você informou. Aguarde o contato para as orientações de acesso.</p>{% endif %}<a class="text-link receipt-back" href="{% url 'home' %}">Voltar ao site</a>
+</div>
+</div>
+</section>{% endblock %}

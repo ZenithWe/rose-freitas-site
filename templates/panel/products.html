@@ -1,3 +1,17 @@
-{% extends "panel/base.html" %}{% block heading %}Cursos e produtos{% endblock %}{% block panel_content %}
-<div class="panel-actions"><p>Gerencie cursos, VIPs e produtos exibidos no site.</p><a class="btn gold small" href="{% url 'panel_product_new' %}">+ Novo produto</a></div>
-<section class="panel-card"><div class="table-wrap"><table><thead><tr><th>Nome</th><th>Tipo</th><th>Preço</th><th>Status</th><th></th></tr></thead><tbody>{% for i in items %}<tr><td><strong>{{ i.title }}</strong></td><td>{{ i.get_kind_display }}</td><td>R$ {{ i.price }}</td><td>{% if i.active %}<span class="status confirmed">Ativo</span>{% else %}<span class="status cancelled">Inativo</span>{% endif %}</td><td class="actions"><a href="{% url 'panel_product_edit' i.pk %}">Editar</a><form method="post" action="{% url 'panel_product_delete' i.pk %}" onsubmit="return confirm('Excluir este produto?')">{% csrf_token %}<button>Excluir</button></form></td></tr>{% empty %}<tr><td colspan="5">Nenhum produto.</td></tr>{% endfor %}</tbody></table></div></section>{% endblock %}
+{% extends "panel/base.html" %}
+{% block title %}Cursos e produtos • Rose Freitas{% endblock %}
+{% block eyebrow %}Suas ofertas{% endblock %}
+{% block heading %}Cursos e produtos{% endblock %}
+{% block description %}Conteúdos que transformam. Organize cursos, VIPs e produtos.{% endblock %}
+{% block page_action %}<a class="panel-button panel-button-primary" href="{% url 'panel_product_new' %}">{% include "panel/icon.html" with icon="plus" %}Novo produto</a>{% endblock %}
+{% block panel_content %}
+<section class="panel-surface panel-list-surface" data-panel-list>
+  {% if items %}
+  {% include "panel/table_tools.html" with search_label="Buscar nome, tipo ou situação" %}
+  <div class="panel-table-wrap"><table class="panel-table"><caption class="panel-sr-only">Cursos, VIPs e produtos cadastrados</caption><thead><tr><th scope="col">Produto</th><th scope="col">Tipo</th><th scope="col">Preço</th><th scope="col">Situação</th><th scope="col">Ações</th></tr></thead><tbody>
+    {% for i in items %}<tr data-record data-search="{{ i.title }} {{ i.get_kind_display }} {% if i.active %}ativo publicado{% else %}inativo oculto{% endif %}"><td data-label="Produto"><div class="panel-product-cell"><span class="panel-product-cover">{% include "panel/icon.html" with icon="book" %}{% if i.cover_url %}<img src="{{ i.cover_url }}" alt="" loading="lazy" data-panel-image>{% endif %}</span><div><strong>{{ i.title }}</strong>{% if i.featured %}<small class="panel-featured-label">{% include "panel/icon.html" with icon="star" %}Em destaque</small>{% endif %}</div></div></td><td data-label="Tipo">{{ i.get_kind_display }}</td><td data-label="Preço" class="panel-money">R$ {{ i.price|floatformat:"2g" }}</td><td data-label="Situação">{% if i.active %}<span class="panel-status confirmed">Ativo</span>{% else %}<span class="panel-status cancelled">Inativo</span>{% endif %}</td><td data-label="Ações"><div class="panel-row-actions"><a class="panel-row-link" href="{% url 'panel_product_edit' i.pk %}" aria-label="Editar {{ i.title }}">Editar</a><form method="post" action="{% url 'panel_product_delete' i.pk %}" data-confirm="Excluir ou desativar este produto? Produtos com pedidos ou acessos serão desativados para preservar o histórico.">{% csrf_token %}<button class="panel-row-link panel-action-danger" type="submit" aria-label="Excluir {{ i.title }}">Excluir</button></form></div></td></tr>{% endfor %}
+  </tbody></table></div>
+  {% include "panel/no_results.html" %}
+  {% else %}<div class="panel-empty"><span class="panel-empty-icon">{% include "panel/icon.html" with icon="book" %}</span><h3>Sua próxima oferta começa aqui.</h3><p>Cadastre o primeiro curso, grupo VIP ou produto para organizar seu catálogo.</p><a class="panel-button panel-button-primary" href="{% url 'panel_product_new' %}">{% include "panel/icon.html" with icon="plus" %}Criar primeiro produto</a></div>{% endif %}
+</section>
+{% endblock %}

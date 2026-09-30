@@ -4,6 +4,12 @@ from . import views
 
 urlpatterns=[
     path("",views.home,name="home"),
+    path("cursos/",views.catalog,name="catalog"),
+    path("vip/",views.vip,name="vip"),
+    path("afiliados/",views.affiliates,name="affiliates"),
+    path("parcerias/",views.partnerships,name="partnerships"),
+    path("robots.txt",views.robots,name="robots"),
+    path("sitemap.xml",views.sitemap,name="sitemap"),
     path("produto/<slug:slug>/",views.product_detail,name="product_detail"),
     path("vip/<slug:slug>/",views.vip_request,name="vip_request"),
     path("vip/sucesso/<int:pk>/",views.vip_success,name="vip_success"),

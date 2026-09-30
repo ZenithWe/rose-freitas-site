@@ -1,9 +1,35 @@
 {% extends "base.html" %}
-{% block title %}{{ product.title }} • Rose Freitas{% endblock %}
-{% block content %}
-<section class="form-shell">
-  <span class="eyebrow">{{ product.title|upper }}</span><h1>Antes do acesso, preencha seus dados</h1>
-  <p>Essas informações serão enviadas para o painel da Rose para acompanhamento da solicitação.</p>
-  <form method="post" class="form-card">{% csrf_token %}{{ form.as_p }}<button class="btn gold full" type="submit">Continuar</button></form>
-</section>
-{% endblock %}
+{% block title %}Solicitar {{ product.title }} • Rose Freitas{% endblock %}
+{% block description %}Envie sua solicitação de participação no {{ product.title }} de Rose Freitas.{% endblock %}
+{% block extra_head %}<meta name="robots" content="noindex, nofollow">{% endblock %}
+{% block content %}<section class="section">
+<div class="container application-grid">
+<aside class="application-intro">
+<a class="text-link" href="{% url 'vip' %}">Voltar aos canais VIP</a>
+<span class="eyebrow">{{ product.get_vip_channel_display|default:'COMUNIDADE VIP' }}</span>
+<h1>O começo de<br>uma nova conexão<span>.</span>
+</h1>
+<h2>{{ product.title }}</h2>
+<p>{{ product.description }}</p>{% if product.price > 0 %}<div class="application-price">
+<span>Investimento</span>
+<strong>R$ {{ product.price|floatformat:2 }}</strong>
+</div>{% endif %}<ol class="step-list">
+<li class="active">
+<span>1</span> Seus dados</li>
+<li>
+<span>2</span> Orientações de acesso</li>
+<li>
+<span>3</span> Confirmação da equipe</li>
+</ol>
+</aside>
+<div class="form-card">
+<span class="eyebrow">PASSO 1 DE 3</span>
+<h2>Vamos nos conhecer.</h2>
+<p>Preencha seus dados para solicitar a participação. A equipe acompanhará seu pedido e a liberação do acesso.</p>
+<form method="post">{% csrf_token %}{% if form.errors %}<div class="form-error-summary" role="alert">Revise os campos abaixo para continuar.</div>{% endif %}{{ form.non_field_errors }}{% for field in form %}<div class="field">
+<label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}{{ field.errors }}</div>{% endfor %}<button class="btn btn-primary full" type="submit">Enviar solicitação</button>
+<p class="form-note">Seus dados serão usados para acompanhar esta solicitação e entrar em contato sobre o acesso.</p>
+</form>
+</div>
+</div>
+</section>{% endblock %}

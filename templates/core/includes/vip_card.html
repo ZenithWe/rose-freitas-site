@@ -1,0 +1,14 @@
+<article class="vip-card">
+<div class="vip-card-top">
+<span class="channel-icon">{% include 'core/includes/icon.html' with name='community' %}</span>
+<span class="eyebrow">{{ p.get_vip_channel_display|default:'Comunidade' }}</span>
+<span class="vip-card-number">0{{ forloop.counter }}</span>
+</div>
+<h3>{{ p.title }}</h3>
+<p>{{ p.description }}</p>
+<div class="vip-card-bottom">
+<strong>{% if p.price > 0 %}R$ {{ p.price|floatformat:2 }}{% else %}Consulte as condições{% endif %}</strong>
+<a class="btn btn-primary" href="{% url 'vip_request' p.slug %}">Solicitar participação <span class="sr-only">em {{ p.title }}</span>
+</a>
+</div>
+</article>

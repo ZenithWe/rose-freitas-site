@@ -1,50 +1,71 @@
 {% load static %}
-<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{% block title %}Painel • Rose Freitas{% endblock %}</title><link rel="stylesheet" href="{% static 'css/style.css' %}"></head>
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b0c0d">
+  <meta name="robots" content="noindex, nofollow">
+  <title>{% block title %}Gestão • Rose Freitas{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <link rel="icon" href="{% static 'img/favicon.svg' %}" type="image/svg+xml">
+  <link rel="stylesheet" href="{% static 'css/panel.css' %}">
+  <script src="{% static 'js/panel.js' %}" defer></script>
+</head>
 <body class="panel-body">
-<aside class="sidebar" id="panel-sidebar">
-  <a href="{% url 'dashboard' %}" class="panel-brand">
-    <span class="panel-brand-word">rose<span>.</span></span>
-    <span class="panel-brand-place">FREITAS <b>ADMIN</b></span>
-  </a>
-  <span class="nav-section-label">GESTÃO</span>
-  <nav aria-label="Menu administrativo">
-    <a class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}"><span class="nav-icon">▦</span>Visão geral</a>
-    <a class="{% if 'product' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'panel_products' %}"><span class="nav-icon">◆</span>Cursos e produtos</a>
-    <a class="{% if request.resolver_match.url_name == 'panel_vip' or request.resolver_match.url_name == 'panel_vip_status' %}active{% endif %}" href="{% url 'panel_vip' %}"><span class="nav-icon">★</span>Solicitações VIP</a>
-    <a class="{% if 'order' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'panel_orders' %}"><span class="nav-icon">≡</span>Pedidos</a>
-    <a class="{% if 'customer' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'panel_customers' %}"><span class="nav-icon">●</span>Clientes</a>
-    <a class="{% if 'finance' in request.resolver_match.url_name or 'expense' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'panel_finance' %}"><span class="nav-icon">R$</span>Financeiro</a>
-    <span class="nav-section-label">SEU SITE</span>
-    <a class="{% if 'banner' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'panel_banners' %}"><span class="nav-icon">▣</span>Banners</a>
-    <a class="{% if 'agenda' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'panel_agenda' %}"><span class="nav-icon">□</span>Agenda</a>
-    <a class="{% if request.resolver_match.url_name == 'panel_settings' %}active{% endif %}" href="{% url 'panel_settings' %}"><span class="nav-icon">⚙</span>Configurações</a>
-  </nav>
-  <div class="sidebar-bottom">
-    <a href="{% url 'home' %}" target="_blank" rel="noopener"><span class="nav-icon">↗</span>Visualizar site</a>
-    <div class="sidebar-profile">
-      <span class="avatar">{{ request.user.username|first|upper }}</span>
-      <div><strong>{{ request.user.first_name|default:request.user.username }}</strong><small>Administrador</small></div>
-      <form method="post" action="{% url 'panel_logout' %}">{% csrf_token %}<button class="logout-btn" type="submit" title="Sair">↪</button></form>
+  <a class="panel-skip" href="#panel-content">Ir para o conteúdo</a>
+  <aside class="panel-sidebar" id="panel-sidebar" aria-label="Navegação administrativa">
+    <div class="panel-sidebar-brand">
+      <a class="panel-brand" href="{% url 'dashboard' %}" aria-label="Rose Freitas — visão geral">
+        <span class="panel-brand-name">rose<span>.</span></span>
+        <span class="panel-brand-caption">FREITAS <span>ESTÚDIO DE GESTÃO</span></span>
+      </a>
+      <button class="panel-menu-close icon-button" type="button" aria-label="Fechar menu" data-panel-close>{% include "panel/icon.html" with icon="close" %}</button>
     </div>
+    <nav class="panel-nav" aria-label="Menu principal">
+      <span class="panel-nav-label">Negócio</span>
+      <a href="{% url 'dashboard' %}" {% if request.resolver_match.url_name == 'dashboard' %}class="active" aria-current="page"{% endif %}>{% include "panel/icon.html" with icon="grid" %}<span>Visão geral</span></a>
+      <a href="{% url 'panel_products' %}" {% if 'product' in request.resolver_match.url_name %}class="active" aria-current="page"{% endif %}>{% include "panel/icon.html" with icon="book" %}<span>Cursos e produtos</span></a>
+      <a href="{% url 'panel_vip' %}" {% if request.resolver_match.url_name == 'panel_vip' or request.resolver_match.url_name == 'panel_vip_status' %}class="active" aria-current="page"{% endif %}>{% include "panel/icon.html" with icon="star" %}<span>Solicitações VIP</span></a>
+      <a href="{% url 'panel_orders' %}" {% if 'order' in request.resolver_match.url_name %}class="active" aria-current="page"{% endif %}>{% include "panel/icon.html" with icon="receipt" %}<span>Pedidos</span></a>
+      <a href="{% url 'panel_customers' %}" {% if 'customer' in request.resolver_match.url_name %}class="active" aria-current="page"{% endif %}>{% include "panel/icon.html" with icon="users" %}<span>Clientes</span></a>
+      <a href="{% url 'panel_finance' %}" {% if 'finance' in request.resolver_match.url_name or 'expense' in request.resolver_match.url_name %}class="active" aria-current="page"{% endif %}>{% include "panel/icon.html" with icon="wallet" %}<span>Financeiro</span></a>
+      <span class="panel-nav-label">Seu site</span>
+      <a href="{% url 'panel_banners' %}" {% if 'banner' in request.resolver_match.url_name %}class="active" aria-current="page"{% endif %}>{% include "panel/icon.html" with icon="image" %}<span>Banners</span></a>
+      <a href="{% url 'panel_agenda' %}" {% if 'agenda' in request.resolver_match.url_name %}class="active" aria-current="page"{% endif %}>{% include "panel/icon.html" with icon="calendar" %}<span>Agenda</span></a>
+      <a href="{% url 'panel_settings' %}" {% if request.resolver_match.url_name == 'panel_settings' %}class="active" aria-current="page"{% endif %}>{% include "panel/icon.html" with icon="settings" %}<span>Configurações</span></a>
+    </nav>
+    <div class="panel-sidebar-bottom">
+      <a class="panel-site-link" href="{% url 'home' %}" target="_blank" rel="noopener">Visualizar site{% include "panel/icon.html" with icon="external" %}<span class="panel-sr-only"> (abre em nova aba)</span></a>
+      <div class="panel-profile">
+        <span class="panel-avatar" aria-hidden="true">{{ request.user.username|first|upper }}</span>
+        <div class="panel-profile-name"><strong>{{ request.user.first_name|default:request.user.username }}</strong><small>Administrador</small></div>
+        <form method="post" action="{% url 'panel_logout' %}">{% csrf_token %}<button class="icon-button" type="submit" aria-label="Sair do painel" title="Sair do painel">{% include "panel/icon.html" with icon="logout" %}</button></form>
+      </div>
+    </div>
+  </aside>
+  <button class="panel-backdrop" type="button" aria-label="Fechar menu administrativo" data-panel-close hidden></button>
+  <div class="panel-layout" id="panel-layout">
+    <header class="panel-topbar">
+      <div class="panel-topbar-start">
+        <button class="panel-menu-toggle icon-button" type="button" aria-label="Abrir menu administrativo" aria-controls="panel-sidebar" aria-expanded="false" data-panel-toggle>{% include "panel/icon.html" with icon="menu" %}</button>
+        <span class="panel-breadcrumb">Rose Freitas <span>/</span> <strong>Gestão</strong></span>
+      </div>
+      <span class="panel-topbar-label">{% include "panel/icon.html" with icon="shield" %}Área administrativa</span>
+    </header>
+    <main class="panel-content" id="panel-content" tabindex="-1">
+      {% if messages %}
+      <div class="panel-messages" aria-live="polite">{% for message in messages %}<div class="panel-message {{ message.tags }}" {% if 'error' in message.tags %}role="alert"{% else %}role="status"{% endif %}>{% include "panel/icon.html" with icon="info" %}<span>{{ message }}</span></div>{% endfor %}</div>
+      {% endif %}
+      {% block page_heading %}
+      <div class="panel-page-heading">
+        <div><p class="panel-eyebrow">{% block eyebrow %}Estúdio de gestão{% endblock %}</p><h1>{% block heading %}Painel{% endblock %}</h1><p class="panel-page-description">{% block description %}Cuide de cada detalhe da sua operação.{% endblock %}</p></div>
+        {% block page_action %}{% endblock %}
+      </div>
+      {% endblock %}
+      {% block panel_content %}{% endblock %}
+    </main>
+    <footer class="panel-footer"><span>Rose Freitas <span class="panel-footer-dot">·</span> Estúdio de gestão</span><span>Horários de Brasília</span></footer>
   </div>
-</aside>
-
-<div class="panel-main">
-  <header class="panel-topbar">
-    <div>
-      <button class="panel-menu-btn" type="button" onclick="document.body.classList.toggle('panel-menu-open')" aria-label="Abrir menu">☰</button>
-      <span>Rose Freitas <span class="muted">/ Gestão</span></span>
-    </div>
-    <span class="topbar-security">Área administrativa</span>
-  </header>
-  <main class="panel-content">
-    {% if messages %}<div class="messages">{% for message in messages %}<div class="message {{ message.tags }}">{{ message }}</div>{% endfor %}</div>{% endif %}
-    {% block page_heading %}<div class="page-heading"><div><h1>{% block heading %}Painel{% endblock %}</h1></div></div>{% endblock %}
-    {% block panel_content %}{% endblock %}
-  </main>
-  <footer class="panel-footer">Rose Freitas • Área administrativa <span>Horários de Brasília</span></footer>
-</div>
-<script>
-document.querySelectorAll('.sidebar nav a,.sidebar-bottom>a').forEach(a=>a.addEventListener('click',()=>document.body.classList.remove('panel-menu-open')));
-</script>
-</body></html>
+</body>
+</html>

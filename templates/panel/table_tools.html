@@ -1,0 +1,4 @@
+<div class="panel-list-toolbar">
+  <p class="panel-record-count" role="status"><strong data-result-count>{{ items|length }}</strong> <span data-record-word>registro{{ items|length|pluralize }}</span><span class="panel-search-count-note" data-search-note hidden> encontrado{{ items|length|pluralize }}</span></p>
+  <label class="panel-search" data-search-ui hidden>{% include "panel/icon.html" with icon="search" %}<span class="panel-sr-only">{{ search_label|default:"Buscar nesta lista" }}</span><input type="search" placeholder="{{ search_label|default:'Buscar nesta lista' }}" autocomplete="off" data-search-input></label>
+</div>

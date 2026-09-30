@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Cursos e produtos • Rose Freitas{% endblock %}
+{% block description %}Explore os cursos e produtos de Rose Freitas. Conheça os conteúdos, aulas, bônus e condições de cada programa.{% endblock %}
+{% block og_title %}Cursos e produtos • Rose Freitas{% endblock %}
+{% block twitter_title %}Cursos e produtos • Rose Freitas{% endblock %}
+{% block og_description %}Explore os cursos, aulas e produtos de Rose Freitas, no seu ritmo.{% endblock %}
+{% block twitter_description %}Explore os cursos, aulas e produtos de Rose Freitas, no seu ritmo.{% endblock %}
+{% block content %}<section class="page-hero">
+<div class="container">
+<div class="eyebrow">APRENDA COM A ROSE</div>
+<h1>Conhecimento para<br>abrir possibilidades<span>.</span>
+</h1>
+<p>Escolha seu próximo passo. Explore os conteúdos e encontre o que faz sentido para o seu momento.</p>
+</div>
+</section>
+<section class="section catalog-section">
+<div class="container" data-catalog>
+<div class="catalog-toolbar">
+<div class="filter-group" role="group" aria-label="Filtrar conteúdos">
+<button type="button" data-filter="all" aria-pressed="true">Todos</button>
+<button type="button" data-filter="course" aria-pressed="false">Cursos</button>
+<button type="button" data-filter="product" aria-pressed="false">Produtos</button>
+</div>
+<div class="catalog-search">
+<label for="catalog-search" class="sr-only">Buscar cursos e produtos</label>
+<input id="catalog-search" type="search" placeholder="Buscar um conteúdo" autocomplete="off">
+</div>
+</div>
+<div class="course-grid">{% for p in courses %}{% include 'core/includes/product_card.html' %}{% endfor %}{% for p in products %}{% include 'core/includes/product_card.html' %}{% endfor %}</div>
+<div class="empty-state" data-catalog-empty {% if courses or products %}hidden{% endif %} role="status">
+<h2>Nenhum conteúdo encontrado.</h2>
+<p>Experimente outra busca ou confira os próximos lançamentos.</p>
+</div>
+</div>
+</section>{% endblock %}

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Afiliados • Rose Freitas{% endblock %}
+{% block description %}Conheça os conteúdos de Rose Freitas e consulte a equipe sobre possibilidades de afiliação e divulgação.{% endblock %}
+{% block og_title %}Afiliados • Rose Freitas{% endblock %}
+{% block twitter_title %}Afiliados • Rose Freitas{% endblock %}
+{% block og_description %}Converse com a equipe sobre afiliação e divulgação dos conteúdos de Rose Freitas.{% endblock %}
+{% block twitter_description %}Converse com a equipe sobre afiliação e divulgação dos conteúdos de Rose Freitas.{% endblock %}
+{% block content %}<section class="page-hero">
+<div class="container">
+<span class="eyebrow">AFILIADOS</span>
+<h1>Conhecimento bom<br>merece ser compartilhado<span>.</span>
+</h1>
+<p>Quer divulgar os conteúdos da Rose? Converse com a equipe para conhecer as possibilidades.</p>
+</div>
+</section>
+<section class="section">
+<div class="container collaboration-grid">
+<div>
+<span class="eyebrow">UMA CONVERSA PARA COMEÇAR</span>
+<h2>Conecte conteúdo<br>e novas pessoas<span>.</span>
+</h2>
+<p class="section-intro">Explore os cursos e produtos, conheça a proposta de cada conteúdo e fale com a equipe sobre sua intenção de divulgação.</p>
+<a class="btn btn-outline" href="{% url 'catalog' %}">Conhecer os conteúdos</a>
+</div>
+<aside class="form-card contact-card">
+<span class="channel-icon">{% include 'core/includes/icon.html' with name='link' %}</span>
+<h2>Interesse em afiliação?</h2>
+<p>Informe qual conteúdo você deseja divulgar e conte sobre seus canais. A equipe poderá orientar sobre disponibilidade e condições.</p>{% if site.partnership_whatsapp %}<a class="btn btn-primary full" href="https://wa.me/{{ site.partnership_whatsapp }}?text=Olá%20Rose,%20quero%20saber%20sobre%20afiliação%20aos%20seus%20conteúdos." target="_blank" rel="noopener noreferrer">Consultar sobre afiliação</a>{% elif site.whatsapp %}<a class="btn btn-primary full" href="https://wa.me/{{ site.whatsapp }}?text=Olá%20Rose,%20quero%20saber%20sobre%20afiliação%20aos%20seus%20conteúdos." target="_blank" rel="noopener noreferrer">Consultar sobre afiliação</a>{% else %}<p class="contact-unavailable">O contato para afiliação ainda não está disponível. Acompanhe os canais oficiais da Rose.</p>{% endif %}<p class="form-note">Consulte a equipe para obter condições e links próprios de afiliação.</p>
+</aside>
+</div>
+</section>{% endblock %}

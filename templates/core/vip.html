@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Comunidade VIP • Rose Freitas{% endblock %}
+{% block description %}Conheça as experiências VIP de Rose Freitas no WhatsApp e Telegram. Consulte as condições e solicite sua participação.{% endblock %}
+{% block og_title %}Comunidade VIP • Rose Freitas{% endblock %}
+{% block twitter_title %}Comunidade VIP • Rose Freitas{% endblock %}
+{% block og_description %}Conteúdos e encontros da comunidade Rose Freitas. Conheça os canais VIP disponíveis.{% endblock %}
+{% block twitter_description %}Conteúdos e encontros da comunidade Rose Freitas. Conheça os canais VIP disponíveis.{% endblock %}
+{% block content %}<section class="page-hero">
+<div class="container">
+<span class="eyebrow">UM CONVITE PARA SE CONECTAR</span>
+<h1>Mais perto.<br>Mais comunidade<span>.</span>
+</h1>
+<p>Conteúdos, conversas e experiências para acompanhar a Rose em canais exclusivos.</p>
+</div>
+</section>
+<section class="section vip-section">
+<div class="container">
+<div class="vip-grid">{% for p in vips %}{% include 'core/includes/vip_card.html' %}{% empty %}<div class="empty-state">
+<h2>Novas experiências a caminho.</h2>
+<p>Os canais disponíveis serão publicados aqui.</p>
+</div>{% endfor %}</div>
+<div class="process-row">
+<div>
+<span>01</span>
+<h2>Escolha seu canal</h2>
+<p>Confira a descrição e as condições do VIP.</p>
+</div>
+<div>
+<span>02</span>
+<h2>Envie sua solicitação</h2>
+<p>Informe seus dados para que a equipe acompanhe seu pedido.</p>
+</div>
+<div>
+<span>03</span>
+<h2>Acompanhe a confirmação</h2>
+<p>Siga as orientações exibidas após o cadastro. A liberação é feita pela equipe.</p>
+</div>
+</div>
+</div>
+</section>{% endblock %}
