@@ -1,2 +1,15 @@
-{% extends "panel/base.html" %}{% block heading %}Agenda{% endblock %}{% block panel_content %}
-<div class="panel-actions"><p>Lives, lançamentos, eventos e datas importantes.</p><a class="btn gold small" href="{% url 'panel_agenda_new' %}">+ Novo item</a></div><section class="panel-card"><div class="table-wrap"><table><thead><tr><th>Data</th><th>Tipo</th><th>Título</th><th>Status</th><th></th></tr></thead><tbody>{% for i in items %}<tr><td>{{ i.starts_at|date:"d/m/Y H:i" }}</td><td>{{ i.get_kind_display }}</td><td>{{ i.title }}</td><td>{% if i.active %}<span class="status confirmed">Publicado</span>{% else %}<span class="status cancelled">Oculto</span>{% endif %}</td><td><a href="{% url 'panel_agenda_edit' i.pk %}">Editar</a></td></tr>{% empty %}<tr><td colspan="5">Agenda vazia.</td></tr>{% endfor %}</tbody></table></div></section>{% endblock %}
+{% extends "panel/base.html" %}
+{% block title %}Agenda • Rose Freitas{% endblock %}
+{% block eyebrow %}Encontros que importam{% endblock %}
+{% block heading %}Agenda{% endblock %}
+{% block description %}Organize lives, lançamentos, eventos e datas importantes.{% endblock %}
+{% block page_action %}<a class="panel-button panel-button-primary" href="{% url 'panel_agenda_new' %}">{% include "panel/icon.html" with icon="plus" %}Novo item</a>{% endblock %}
+{% block panel_content %}
+<section class="panel-surface panel-list-surface" data-panel-list>
+  {% if items %}{% include "panel/table_tools.html" with search_label="Buscar título, tipo ou data" %}
+  <div class="panel-table-wrap"><table class="panel-table"><caption class="panel-sr-only">Todos os itens da agenda</caption><thead><tr><th scope="col">Quando</th><th scope="col">Título</th><th scope="col">Tipo</th><th scope="col">Situação</th><th scope="col">Ações</th></tr></thead><tbody>
+    {% for i in items %}<tr data-record data-search="{{ i.title }} {{ i.get_kind_display }} {{ i.starts_at|date:'d/m/Y' }} {% if i.active %}publicado{% else %}oculto{% endif %}"><td data-label="Quando"><strong>{{ i.starts_at|date:"d/m/Y" }}</strong><small>{{ i.starts_at|date:"H:i" }} · Brasília</small></td><td data-label="Título"><strong>{{ i.title }}</strong>{% if i.description %}<small>{{ i.description|truncatechars:120 }}</small>{% endif %}</td><td data-label="Tipo">{{ i.get_kind_display }}</td><td data-label="Situação">{% if i.active %}<span class="panel-status confirmed">Publicado</span>{% else %}<span class="panel-status cancelled">Oculto</span>{% endif %}</td><td data-label="Ações"><a class="panel-row-link" href="{% url 'panel_agenda_edit' i.pk %}" aria-label="Editar {{ i.title }}">Editar{% include "panel/icon.html" with icon="arrow" %}</a></td></tr>{% endfor %}
+  </tbody></table></div>{% include "panel/no_results.html" %}
+  {% else %}<div class="panel-empty"><span class="panel-empty-icon">{% include "panel/icon.html" with icon="calendar" %}</span><h3>Reserve espaço para o próximo encontro.</h3><p>Adicione uma live, um lançamento ou uma data importante à sua agenda.</p><a class="panel-button panel-button-primary" href="{% url 'panel_agenda_new' %}">{% include "panel/icon.html" with icon="plus" %}Criar primeiro item</a></div>{% endif %}
+</section>
+{% endblock %}

@@ -1,33 +1,56 @@
 {% extends "base.html" %}
 {% block title %}{{ product.title }} • Rose Freitas{% endblock %}
-{% block content %}
-<section class="product-hero">
-  <div class="container">
-    <a class="back-link" href="{% url 'home' %}#cursos">← Voltar para cursos</a>
-    <div class="product-hero-grid">
-      <div>
-        <div class="eyebrow light"><span></span>{{ product.get_kind_display|upper }}</div>
-        <h1>{{ product.title }}</h1>
-        <p>{{ product.description }}</p>
-      </div>
-      <div class="product-stamp"><span>R<span>/</span>F</span><small>ROSE FREITAS<br>CONTEÚDO AUTORAL</small></div>
-    </div>
-  </div>
+{% block description %}{{ product.description|truncatechars:160 }}{% endblock %}
+{% block og_title %}{{ product.title }} • Rose Freitas{% endblock %}
+{% block twitter_title %}{{ product.title }} • Rose Freitas{% endblock %}
+{% block og_description %}{{ product.description|truncatechars:160 }}{% endblock %}
+{% block twitter_description %}{{ product.description|truncatechars:160 }}{% endblock %}
+{% block twitter_card %}{% if product.cover_url %}summary_large_image{% else %}summary{% endif %}{% endblock %}
+{% block extra_head %}{% if product.cover_url %}<meta property="og:image" content="{{ product.cover_url }}">
+<meta property="og:image:alt" content="{{ product.title }}">
+<meta name="twitter:image" content="{{ product.cover_url }}">{% endif %}{% endblock %}
+{% block content %}<section class="product-hero">
+<div class="container">
+<nav class="breadcrumbs" aria-label="Localização">
+<a href="{% url 'home' %}">Início</a>
+<span>/</span>
+<a href="{% url 'catalog' %}">Cursos e produtos</a>
+<span>/</span>
+<span>{{ product.get_kind_display }}</span>
+</nav>
+<div class="product-hero-grid">
+<div>
+<span class="eyebrow">{{ product.get_kind_display }} · ROSE FREITAS</span>
+<h1>{{ product.title }}</h1>
+<div class="product-facts">{% if product.lessons %}<span>{% include 'core/includes/icon.html' with name='play' %} {{ product.lessons }} aulas</span>{% endif %}{% if product.bonus %}<span>{% include 'core/includes/icon.html' with name='book' %} {{ product.bonus }}</span>{% endif %}</div>
+</div>
+<div class="detail-cover">{% if product.cover_url %}<img src="{{ product.cover_url }}" alt="{{ product.title }}" width="640" height="440" fetchpriority="high">{% else %}<span class="eyebrow">CONTEÚDO AUTORAL</span>
+<span class="detail-monogram" aria-hidden="true">RF.</span>
+<span>ROSE FREITAS</span>{% endif %}</div>
+</div>
+</div>
 </section>
-<section class="section section-light">
-  <div class="container detail-grid">
-    <div class="detail-content">
-      <div class="eyebrow">SOBRE O CONTEÚDO</div>
-      <h2>O que você encontra aqui</h2>
-      <p>{{ product.description }}</p>
-      <div class="detail-facts">{% if product.lessons %}<div><small>AULAS</small><strong>{{ product.lessons }}</strong></div>{% endif %}{% if product.bonus %}<div><small>EXTRA</small><strong>{{ product.bonus }}</strong></div>{% endif %}</div>
-    </div>
-    <aside class="purchase-card">
-      <small>INVESTIMENTO</small>
-      <strong>{% if product.price > 0 %}R$ {{ product.price }}{% else %}Consulte{% endif %}</strong>
-      {% if product.checkout_url %}<a class="btn btn-primary full" href="{{ product.checkout_url }}" target="_blank" rel="noopener">Inscreva-se</a>{% else %}<a class="btn btn-primary full" href="#contato">Quero saber mais</a>{% endif %}
-      <a class="btn btn-light full" href="{% url 'customer_area' %}">Rever os conteúdos</a>
-    </aside>
-  </div>
-</section>
-{% endblock %}
+<section class="section">
+<div class="container detail-grid">
+<div class="detail-content">
+<span class="eyebrow">SOBRE O CONTEÚDO</span>
+<h2>Um novo passo<br>na sua jornada<span>.</span>
+</h2>
+<div class="rich-text">{{ product.description|linebreaks }}</div>{% if product.lessons or product.bonus %}<div class="detail-facts">{% if product.lessons %}<div>
+<span class="eyebrow">AULAS</span>
+<strong>{{ product.lessons }}</strong>
+</div>{% endif %}{% if product.bonus %}<div>
+<span class="eyebrow">EXTRA</span>
+<strong>{{ product.bonus }}</strong>
+</div>{% endif %}</div>{% endif %}</div>
+<aside class="purchase-card" aria-label="Condições de acesso">
+<span class="eyebrow">SEU PRÓXIMO PASSO</span>
+<h2>{% if product.price > 0 %}R$ {{ product.price|floatformat:2 }}{% else %}Consulte as condições{% endif %}</h2>{% if product.checkout_url %}<a class="btn btn-primary full" href="{{ product.checkout_url }}" target="_blank" rel="noopener noreferrer">{% if product.kind == 'product' %}Comprar produto{% else %}Quero me inscrever{% endif %}<span class="sr-only">(abre em outra aba)</span>
+</a>
+<p class="purchase-note">Você será direcionada à página de pagamento para conferir as condições e concluir sua compra.</p>{% if product.kind == 'vip' %}<a class="btn btn-outline full" href="{% url 'vip_request' product.slug %}">Registrar solicitação VIP</a>{% endif %}{% elif product.kind == 'vip' %}<a class="btn btn-primary full" href="{% url 'vip_request' product.slug %}">Solicitar participação</a>{% elif site.whatsapp %}<a class="btn btn-primary full" href="https://wa.me/{{ site.whatsapp }}?text=Olá,%20quero%20saber%20mais%20sobre%20{{ product.title|urlencode }}." target="_blank" rel="noopener noreferrer">Consultar a equipe</a>{% else %}<p class="purchase-note">As inscrições para este conteúdo ainda não estão disponíveis. Acompanhe as novidades da Rose.</p>{% endif %}<div class="purchase-divider">
+</div>
+<span class="purchase-note">Já tem acesso a este conteúdo?</span>
+<a class="btn btn-outline full" href="{% url 'customer_area' %}">{% include 'core/includes/icon.html' with name='lock' %} Entrar na área do cliente</a>
+</aside>
+</div>
+</section>{% endblock %}

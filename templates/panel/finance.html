@@ -1,3 +1,22 @@
-{% extends "panel/base.html" %}{% block heading %}Financeiro{% endblock %}{% block panel_content %}
-<div class="stat-grid three"><article><small>RECEITA CONFIRMADA</small><strong>R$ {{ revenue }}</strong></article><article><small>DESPESAS</small><strong>R$ {{ expenses }}</strong></article><article><small>SALDO</small><strong>R$ {{ balance }}</strong></article></div>
-<div class="panel-actions"><p>Controle simples de custos do projeto.</p><a class="btn gold small" href="{% url 'panel_expense_new' %}">+ Nova despesa</a></div><section class="panel-card"><div class="table-wrap"><table><thead><tr><th>Data</th><th>Descrição</th><th>Valor</th></tr></thead><tbody>{% for i in items %}<tr><td>{{ i.date|date:"d/m/Y" }}</td><td>{{ i.description }}</td><td>R$ {{ i.amount }}</td></tr>{% empty %}<tr><td colspan="3">Nenhuma despesa.</td></tr>{% endfor %}</tbody></table></div></section>{% endblock %}
+{% extends "panel/base.html" %}
+{% block title %}Financeiro • Rose Freitas{% endblock %}
+{% block eyebrow %}Clareza para seguir em frente{% endblock %}
+{% block heading %}Financeiro{% endblock %}
+{% block description %}Uma visão simples das receitas e dos custos do seu negócio.{% endblock %}
+{% block page_action %}<a class="panel-button panel-button-primary" href="{% url 'panel_expense_new' %}">{% include "panel/icon.html" with icon="plus" %}Nova despesa</a>{% endblock %}
+{% block panel_content %}
+<section class="panel-metrics panel-metrics-three" aria-label="Resumo financeiro">
+  <article class="panel-metric"><div class="panel-metric-label"><span>Receita confirmada</span>{% include "panel/icon.html" with icon="wallet" %}</div><strong><span class="panel-currency">R$</span> {{ revenue|floatformat:"2g" }}</strong><small>Total dos pedidos pagos</small></article>
+  <article class="panel-metric"><div class="panel-metric-label"><span>Despesas registradas</span>{% include "panel/icon.html" with icon="receipt" %}</div><strong><span class="panel-currency">R$</span> {{ expenses|floatformat:"2g" }}</strong><small>Total de todos os lançamentos</small></article>
+  <article class="panel-metric panel-metric-featured"><div class="panel-metric-label"><span>Saldo registrado</span>{% include "panel/icon.html" with icon="wallet" %}</div><strong {% if balance < 0 %}class="panel-negative"{% endif %}><span class="panel-currency">R$</span> {{ balance|floatformat:"2g" }}</strong><small>Receita confirmada menos despesas</small></article>
+</section>
+<section class="panel-surface panel-list-surface" data-panel-list>
+  <div class="panel-surface-heading"><div><p class="panel-eyebrow">Registro de custos</p><h2>Despesas recentes</h2><p>Até 30 lançamentos mais recentes, por data.</p></div></div>
+  {% if items %}{% include "panel/table_tools.html" with search_label="Buscar descrição ou data" %}
+  <div class="panel-table-wrap"><table class="panel-table"><caption class="panel-sr-only">As 30 despesas mais recentes por data</caption><thead><tr><th scope="col">Data</th><th scope="col">Descrição</th><th scope="col">Valor</th></tr></thead><tbody>
+    {% for i in items %}<tr data-record data-search="{{ i.description }} {{ i.date|date:'d/m/Y' }}"><td data-label="Data">{{ i.date|date:"d/m/Y" }}</td><td data-label="Descrição"><strong>{{ i.description }}</strong></td><td data-label="Valor" class="panel-money">R$ {{ i.amount|floatformat:"2g" }}</td></tr>{% endfor %}
+  </tbody></table></div>{% include "panel/no_results.html" %}
+  {% else %}<div class="panel-empty"><span class="panel-empty-icon">{% include "panel/icon.html" with icon="wallet" %}</span><h3>Seu financeiro começa organizado.</h3><p>Registre uma despesa para acompanhar os custos do projeto.</p><a class="panel-button panel-button-primary" href="{% url 'panel_expense_new' %}">{% include "panel/icon.html" with icon="plus" %}Registrar primeira despesa</a></div>{% endif %}
+</section>
+<p class="panel-footnote">{% include "panel/icon.html" with icon="info" %}O saldo é um controle interno dos registros do painel. Ele não consulta nem movimenta sua conta bancária.</p>
+{% endblock %}

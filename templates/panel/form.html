@@ -1,2 +1,41 @@
-{% extends "panel/base.html" %}{% block heading %}{{ title }}{% endblock %}{% block panel_content %}
-<section class="panel-card form-panel"><form method="post">{% csrf_token %}{{ form.as_p }}<div class="form-actions"><a class="btn ghost small" href="javascript:history.back()">Cancelar</a><button class="btn gold small" type="submit">Salvar</button></div></form></section>{% endblock %}
+{% extends "panel/base.html" %}
+{% block title %}{{ title }} • Rose Freitas{% endblock %}
+{% block eyebrow %}{% if request.resolver_match.url_name == 'panel_settings' %}A essência do seu site{% else %}Estúdio de gestão{% endif %}{% endblock %}
+{% block heading %}{{ title }}{% endblock %}
+{% block description %}{% if request.resolver_match.url_name == 'panel_settings' %}Textos, contatos e links que conectam sua marca ao mundo.{% else %}Preencha as informações e salve para atualizar seu painel.{% endif %}{% endblock %}
+{% block page_action %}<a class="panel-text-link" href="{% include 'panel/return_url.html' %}">{% include "panel/icon.html" with icon="arrow-left" %}Voltar</a>{% endblock %}
+{% block panel_content %}
+<div class="panel-form-layout">
+  <section class="panel-surface panel-form-surface">
+    <div class="panel-form-heading"><h2>{% if request.resolver_match.url_name == 'panel_settings' %}Informações do site{% else %}Informações do cadastro{% endif %}</h2><p>Os campos com <span aria-hidden="true">*</span> são obrigatórios.</p></div>
+    <form method="post" class="panel-edit-form">
+      {% csrf_token %}
+      {% for field in form.hidden_fields %}{{ field }}{% if field.errors %}<div class="panel-message error" role="alert">{{ field.errors }}</div>{% endif %}{% endfor %}
+      {% if form.errors %}<div class="panel-form-error-summary" role="alert"><h3>Revise as informações para continuar.</h3>{% if form.non_field_errors %}{{ form.non_field_errors }}{% endif %}<ul>{% for field in form.visible_fields %}{% if field.errors %}<li><a href="#{{ field.id_for_label }}">{{ field.label }}: {{ field.errors|striptags }}</a></li>{% endif %}{% endfor %}</ul></div>{% endif %}
+      <div class="panel-form-fields">
+      {% for field in form.visible_fields %}
+        <div class="panel-field {% if field.errors %}panel-field-invalid{% endif %} {% if field.field.widget.input_type == 'checkbox' %}panel-field-checkbox{% endif %} {% if field.field.widget.input_type == 'textarea' or field.name == 'description' or field.name == 'hero_subtitle' %}panel-field-wide{% endif %}">
+          {% if field.field.widget.input_type == 'checkbox' %}<div class="panel-checkbox-row">{{ field }}{{ field.label_tag }}</div>{% else %}<div class="panel-field-label">{{ field.label_tag }}{% if field.field.required %}<span class="panel-required" aria-label="obrigatório">*</span>{% endif %}</div>{{ field }}{% endif %}
+          {% if field.help_text %}<p class="panel-field-help" id="{{ field.auto_id }}_helptext">{{ field.help_text|safe }}</p>{% endif %}
+          {% if field.errors %}<ul class="panel-field-errors" id="{{ field.auto_id }}_error">{% for error in field.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
+        </div>
+      {% endfor %}
+      </div>
+      <div class="panel-form-actions"><a class="panel-button panel-button-secondary" href="{% include 'panel/return_url.html' %}">Cancelar</a><button class="panel-button panel-button-primary" type="submit">{% include "panel/icon.html" with icon="check" %}{% if request.resolver_match.url_name == 'panel_customer_new' %}Liberar acesso{% elif request.resolver_match.url_name == 'panel_expense_new' %}Registrar despesa{% else %}Salvar alterações{% endif %}</button></div>
+    </form>
+  </section>
+  <aside class="panel-form-note">
+    <span class="panel-form-note-icon">{% if request.resolver_match.url_name == 'panel_settings' %}{% include "panel/icon.html" with icon="settings" %}{% elif 'product' in request.resolver_match.url_name %}{% include "panel/icon.html" with icon="book" %}{% elif 'customer' in request.resolver_match.url_name %}{% include "panel/icon.html" with icon="users" %}{% elif 'expense' in request.resolver_match.url_name %}{% include "panel/icon.html" with icon="wallet" %}{% elif 'agenda' in request.resolver_match.url_name %}{% include "panel/icon.html" with icon="calendar" %}{% else %}{% include "panel/icon.html" with icon="info" %}{% endif %}</span>
+    <h2>Cada detalhe conta.</h2>
+    {% if request.resolver_match.url_name == 'panel_settings' %}<p>Revise os textos da página inicial e mantenha suas redes sociais, contatos e informações de Pix atualizados.</p>
+    {% elif 'product' in request.resolver_match.url_name %}<p>Apresente sua oferta com clareza: título, descrição, preço e um link de checkout atualizado.</p><p>A opção “Ativo” controla a publicação. “Em destaque” dá prioridade ao produto no catálogo.</p>
+    {% elif 'customer' in request.resolver_match.url_name %}<p>Escolha o produto e informe o e-mail usado pelo cliente. O acesso ativo fica disponível na área do cliente.</p>
+    {% elif 'order' in request.resolver_match.url_name %}<p>Ao confirmar um pedido como pago, o painel registra a data e cria o acesso do cliente ao produto.</p>
+    {% elif 'expense' in request.resolver_match.url_name %}<p>Use uma descrição fácil de reconhecer. O valor registrado entra no total de despesas e no cálculo do saldo.</p>
+    {% elif 'agenda' in request.resolver_match.url_name %}<p>Informe a data e a hora de Brasília. Os próximos itens ativos aparecem na agenda do site.</p>
+    {% elif 'banner' in request.resolver_match.url_name %}<p>Defina a mensagem, o texto do botão e o destino do destaque. A ordem determina a posição na página inicial.</p>
+    {% else %}<p>Revise as informações antes de salvar. As alterações ficam disponíveis assim que o cadastro é confirmado.</p>{% endif %}
+    <a class="panel-text-link" href="{% url 'home' %}" target="_blank" rel="noopener">Visualizar site{% include "panel/icon.html" with icon="external" %}<span class="panel-sr-only"> (abre em nova aba)</span></a>
+  </aside>
+</div>
+{% endblock %}

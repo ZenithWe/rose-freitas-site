@@ -1,2 +1,16 @@
-{% extends "panel/base.html" %}{% block heading %}Clientes{% endblock %}{% block panel_content %}
-<div class="panel-actions"><p>Libere ou acompanhe acessos a cursos e materiais.</p><a class="btn gold small" href="{% url 'panel_customer_new' %}">+ Liberar acesso</a></div><section class="panel-card"><div class="table-wrap"><table><thead><tr><th>E-mail</th><th>Produto</th><th>Desde</th><th>Status</th></tr></thead><tbody>{% for i in items %}<tr><td>{{ i.email }}</td><td>{{ i.product.title }}</td><td>{{ i.created_at|date:"d/m/Y" }}</td><td>{% if i.active %}<span class="status confirmed">Ativo</span>{% else %}<span class="status cancelled">Bloqueado</span>{% endif %}</td></tr>{% empty %}<tr><td colspan="4">Nenhum acesso liberado.</td></tr>{% endfor %}</tbody></table></div></section>{% endblock %}
+{% extends "panel/base.html" %}
+{% block title %}Clientes • Rose Freitas{% endblock %}
+{% block eyebrow %}Relacionamento e acesso{% endblock %}
+{% block heading %}Clientes{% endblock %}
+{% block description %}Acompanhe quem tem acesso aos seus cursos e materiais.{% endblock %}
+{% block page_action %}<a class="panel-button panel-button-primary" href="{% url 'panel_customer_new' %}">{% include "panel/icon.html" with icon="plus" %}Liberar acesso</a>{% endblock %}
+{% block panel_content %}
+<section class="panel-surface panel-list-surface" data-panel-list>
+  {% if items %}{% include "panel/table_tools.html" with search_label="Buscar e-mail, produto ou situação" %}
+  <div class="panel-table-wrap"><table class="panel-table"><caption class="panel-sr-only">Acessos de clientes aos produtos</caption><thead><tr><th scope="col">E-mail do cliente</th><th scope="col">Produto</th><th scope="col">Desde</th><th scope="col">Situação</th><th scope="col">Ações</th></tr></thead><tbody>
+    {% for i in items %}<tr data-record data-search="{{ i.email }} {{ i.product.title }} {% if i.active %}ativo liberado{% else %}bloqueado{% endif %}"><td data-label="Cliente"><strong>{{ i.email }}</strong></td><td data-label="Produto">{{ i.product.title }}</td><td data-label="Desde">{{ i.created_at|date:"d/m/Y" }}</td><td data-label="Situação">{% if i.active %}<span class="panel-status confirmed">Ativo</span>{% else %}<span class="panel-status cancelled">Bloqueado</span>{% endif %}</td><td data-label="Ações"><a class="panel-row-link" href="{% url 'admin:core_customeraccess_change' i.pk %}" aria-label="Gerenciar acesso de {{ i.email }} a {{ i.product.title }}">Gerenciar acesso{% include "panel/icon.html" with icon="arrow" %}</a></td></tr>{% endfor %}
+  </tbody></table></div>{% include "panel/no_results.html" %}
+  {% else %}<div class="panel-empty"><span class="panel-empty-icon">{% include "panel/icon.html" with icon="users" %}</span><h3>Abra as portas para o primeiro cliente.</h3><p>Os acessos liberados aos cursos e materiais ficam reunidos aqui.</p><a class="panel-button panel-button-primary" href="{% url 'panel_customer_new' %}">{% include "panel/icon.html" with icon="plus" %}Liberar primeiro acesso</a></div>{% endif %}
+</section>
+<p class="panel-footnote">{% include "panel/icon.html" with icon="info" %}Cada registro vincula um e-mail a um produto. O mesmo cliente pode ter mais de um acesso.</p>
+{% endblock %}

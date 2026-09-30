@@ -1,2 +1,14 @@
-{% extends "panel/base.html" %}{% block heading %}Pedidos{% endblock %}{% block panel_content %}
-<section class="panel-card"><div class="table-wrap"><table><thead><tr><th>Cliente</th><th>Produto</th><th>E-mail</th><th>Total</th><th>Status</th><th></th></tr></thead><tbody>{% for i in items %}<tr><td>{{ i.customer_name }}</td><td>{{ i.product.title }}</td><td>{{ i.email }}</td><td>R$ {{ i.total }}</td><td><span class="status {{ i.status }}">{{ i.get_status_display }}</span></td><td><a href="{% url 'panel_order_edit' i.pk %}">Editar</a></td></tr>{% empty %}<tr><td colspan="6">Nenhum pedido cadastrado.</td></tr>{% endfor %}</tbody></table></div></section>{% endblock %}
+{% extends "panel/base.html" %}
+{% block title %}Pedidos • Rose Freitas{% endblock %}
+{% block eyebrow %}Movimentações do negócio{% endblock %}
+{% block heading %}Pedidos{% endblock %}
+{% block description %}Acompanhe clientes, valores e a situação de cada compra.{% endblock %}
+{% block panel_content %}
+<section class="panel-surface panel-list-surface" data-panel-list>
+  {% if items %}{% include "panel/table_tools.html" with search_label="Buscar cliente, produto ou situação" %}
+  <div class="panel-table-wrap"><table class="panel-table"><caption class="panel-sr-only">Todos os pedidos registrados</caption><thead><tr><th scope="col">Cliente</th><th scope="col">Produto</th><th scope="col">Contato</th><th scope="col">Total</th><th scope="col">Situação</th><th scope="col">Ações</th></tr></thead><tbody>
+    {% for i in items %}<tr data-record data-search="{{ i.customer_name }} {{ i.product.title }} {{ i.email }} {{ i.phone }} {{ i.get_status_display }}"><td data-label="Cliente"><strong>{{ i.customer_name }}</strong><small>{{ i.created_at|date:"d/m/Y" }}</small></td><td data-label="Produto">{{ i.product.title }}</td><td data-label="Contato"><span class="panel-break">{{ i.email }}</span>{% if i.phone %}<small>{{ i.phone }}</small>{% endif %}</td><td data-label="Total" class="panel-money">R$ {{ i.total|floatformat:"2g" }}</td><td data-label="Situação"><span class="panel-status {{ i.status }}">{{ i.get_status_display }}</span></td><td data-label="Ações"><a class="panel-row-link" href="{% url 'panel_order_edit' i.pk %}" aria-label="Editar pedido de {{ i.customer_name }}">Editar{% include "panel/icon.html" with icon="arrow" %}</a></td></tr>{% endfor %}
+  </tbody></table></div>{% include "panel/no_results.html" %}
+  {% else %}<div class="panel-empty"><span class="panel-empty-icon">{% include "panel/icon.html" with icon="receipt" %}</span><h3>Nenhum pedido registrado por enquanto.</h3><p>Quando houver pedidos cadastrados, você poderá acompanhar e atualizar cada um por aqui.</p><a class="panel-text-link" href="{% url 'panel_products' %}">Ver cursos e produtos{% include "panel/icon.html" with icon="arrow" %}</a></div>{% endif %}
+</section>
+{% endblock %}

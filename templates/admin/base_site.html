@@ -1,0 +1,19 @@
+{% extends "admin/base.html" %}
+{% load static i18n %}
+
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | Rose Freitas{% endblock %}
+
+{% block extrahead %}
+{{ block.super }}
+<meta name="theme-color" content="#0b0c0d">
+<link rel="icon" href="{% static 'img/favicon.svg' %}" type="image/svg+xml">
+<link rel="stylesheet" href="{% static 'css/admin.css' %}">
+{% endblock %}
+
+{% block branding %}
+<div id="site-name"><a class="rose-admin-brand" href="{% url 'admin:index' %}" aria-label="Rose Freitas — administração">rose<span>.</span><small>FREITAS · GESTÃO</small></a></div>
+<a class="rose-admin-return" href="{% url 'dashboard' %}"><span aria-hidden="true">←</span> Voltar ao painel</a>
+{% if user.is_anonymous %}{% include "admin/color_theme_toggle.html" %}{% endif %}
+{% endblock %}
+
+{% block nav-global %}{% endblock %}
