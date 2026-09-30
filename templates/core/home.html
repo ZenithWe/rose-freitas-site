@@ -1,142 +1,215 @@
 {% extends "base.html" %}
+{% block body_class %}rf-home{% endblock %}
 {% block content %}
-<section class="hero editorial-hero">
-  {% include 'core/includes/background_paths.html' %}
-  <div class="container hero-inner">
-    <div class="hero-copy">
-<div class="eyebrow">
-<span class="eyebrow-line">
-</span> O UNIVERSO ROSE FREITAS</div>
-<h1>{{ site.hero_title }}</h1>
-<p>{{ site.hero_subtitle }}</p>
-<div class="hero-actions">
-<a class="btn btn-primary" href="#cursos">{{ site.hero_button }}</a>
-<a class="text-link" href="{% url 'customer_area' %}">Já tenho acesso</a>
-</div>
-<div class="hero-topics">
-<span>Conteúdo autoral</span>
-<span>Estratégia</span>
-<span>Comunidade</span>
-</div>
-</div>
-    {% with featured=courses.first %}<aside class="hero-feature">
-<div class="feature-top">
-<span class="eyebrow">{% if featured %}CONTEÚDO EM FOCO{% else %}ROSE FREITAS{% endif %}</span>
-<span class="feature-seal">RF</span>
-</div>{% if featured.image_url %}<img class="hero-feature-image" src="{{ featured.image_url }}" alt="{{ featured.title }}" width="640" height="460" fetchpriority="high">{% else %}<div class="feature-monogram" aria-hidden="true">R<span>F</span>
-<i>.</i>
-</div>{% endif %}<div class="feature-content">{% if featured %}<span class="eyebrow">{{ featured.get_kind_display }}</span>
-<h2>{{ featured.title }}</h2>
-<div class="feature-bottom">
-<span>{% if featured.lessons %}{{ featured.lessons }} aulas{% endif %}{% if featured.bonus %} · {{ featured.bonus }}{% endif %}</span>
-<a class="feature-action" href="{% url 'product_detail' featured.slug %}" aria-label="Conhecer {{ featured.title }}">{% include 'core/includes/icon.html' with name='play' %}</a>
-</div>{% else %}<h2>Conhecimento.<br>Presença. Conexão.</h2>
-<a class="text-link" href="{% url 'catalog' %}">Explore os conteúdos</a>{% endif %}</div>
-</aside>{% endwith %}
+<section class="rf-hero">
+  <div class="rf-hero-orb rf-orb-one"></div>
+  <div class="rf-hero-orb rf-orb-two"></div>
+  <div class="rf-hero-grid-bg" aria-hidden="true"></div>
+  <div class="container rf-hero-layout">
+    <div class="rf-hero-copy" data-reveal>
+      <div class="rf-kicker"><span></span> O UNIVERSO ROSE FREITAS</div>
+      <h1>{{ site.hero_title }}</h1>
+      <p>{{ site.hero_subtitle }}</p>
+      <div class="rf-hero-actions">
+        <a class="rf-btn rf-btn-primary" href="#cursos">{{ site.hero_button }}</a>
+        <a class="rf-btn rf-btn-ghost" href="{% url 'customer_area' %}">Já tenho acesso <span>↗</span></a>
+      </div>
+      <div class="rf-proof-row">
+        <div><strong>Conteúdo</strong><span>autoral e aplicável</span></div>
+        <div><strong>Presença</strong><span>com identidade</span></div>
+        <div><strong>Comunidade</strong><span>para ir além</span></div>
+      </div>
+    </div>
+
+    <div class="rf-hero-stage" data-reveal>
+      {% with featured=courses.first %}
+      <article class="rf-feature-card spotlight-card">
+        <div class="rf-feature-glow"></div>
+        <div class="rf-feature-topline">
+          <span>{% if featured %}EM DESTAQUE{% else %}ROSE FREITAS{% endif %}</span>
+          <span class="rf-live-dot"></span>
+        </div>
+        {% if featured and featured.image_url %}
+          <a class="rf-feature-media" href="{% url 'product_detail' featured.slug %}">
+            <img src="{{ featured.image_url }}" alt="{{ featured.title }}" width="760" height="620" fetchpriority="high">
+          </a>
+        {% else %}
+          <div class="rf-feature-media rf-feature-art">
+            <span>RF</span>
+            <i>presença • voz • criação</i>
+          </div>
+        {% endif %}
+        <div class="rf-feature-body">
+          <span class="rf-kicker">{% if featured %}{{ featured.get_kind_display }}{% else %}CONTEÚDO AUTORAL{% endif %}</span>
+          <h2>{% if featured %}{{ featured.title }}{% else %}Conhecimento, presença e conexão.{% endif %}</h2>
+          <div class="rf-feature-footer">
+            <span>{% if featured and featured.lessons %}{{ featured.lessons }} aulas{% elif featured %}Por Rose Freitas{% else %}Explore o universo{% endif %}</span>
+            {% if featured %}<a href="{% url 'product_detail' featured.slug %}" aria-label="Conhecer {{ featured.title }}">↗</a>{% else %}<a href="{% url 'catalog' %}">↗</a>{% endif %}
+          </div>
+        </div>
+      </article>
+      {% endwith %}
+      <div class="rf-floating-note rf-note-one"><span>01</span><strong>Aprenda no seu ritmo</strong></div>
+      <div class="rf-floating-note rf-note-two"><span>02</span><strong>Construa sua presença</strong></div>
+    </div>
   </div>
-  <div class="container hero-bottom">
-<span>APRENDA NO SEU RITMO</span>
-<span class="hero-rule">
-</span>
-<a href="#cursos">Explore os conteúdos</a>
-</div>
+  <div class="container rf-scroll-cue"><span>DESÇA PARA EXPLORAR</span><i></i></div>
 </section>
-<div class="brand-strip" aria-hidden="true">
-<div class="container">
-<span>Aprenda.</span>
-<span>Comunique.</span>
-<span>Crie.</span>
-<span class="strip-accent">Seja você.</span>
-</div>
-</div>
-{% if banners %}<section class="section highlights">
-<div class="container">
-<div class="section-heading">
-<div>
-<span class="eyebrow">SELEÇÃO DA ROSE</span>
-<h2>Em destaque.</h2>
-</div>
-</div>
-<div class="feature-stack">{% for b in banners %}<article class="promo">{% if b.image_url %}<img src="{{ b.image_url }}" alt="" width="1280" height="480" loading="lazy" decoding="async">{% endif %}<div class="promo-content">
-<span class="eyebrow">NOVIDADES</span>
-<h3>{{ b.title }}</h3>{% if b.subtitle %}<p>{{ b.subtitle }}</p>{% endif %}<a class="btn btn-primary" href="{{ b.link }}">{{ b.button_text }}</a>
-</div>
-</article>{% endfor %}</div>
-</div>
-</section>{% endif %}
-<section id="cursos" class="section paper-section">
-<div class="container">
-<div class="section-heading">
-<div>
-<span class="eyebrow">CONHECIMENTO QUE SE TRANSFORMA</span>
-<h2>Seu próximo passo<br>começa aqui<span>.</span>
-</h2>
-</div>
-<div>
-<p>Conteúdos para desenvolver sua presença, encontrar sua voz e aplicar novas ideias.</p>
-<a class="text-link" href="{% url 'catalog' %}">Ver todos os cursos e produtos</a>
-</div>
-</div>
-<div class="course-grid">{% for p in courses %}{% include 'core/includes/product_card.html' %}{% empty %}<div class="empty-state">
-<h3>Novos cursos a caminho.</h3>
-<p>Os conteúdos publicados pela Rose aparecerão aqui.</p>
-</div>{% endfor %}{% for p in products %}{% include 'core/includes/product_card.html' %}{% endfor %}</div>
-</div>
+
+<section class="rf-marquee" aria-label="Temas do universo Rose Freitas">
+  <div class="rf-marquee-track">
+    <span>CRIATIVIDADE</span><i>✦</i><span>PRESENÇA</span><i>✦</i><span>COMUNICAÇÃO</span><i>✦</i><span>ESTRATÉGIA</span><i>✦</i><span>COMUNIDADE</span><i>✦</i>
+    <span>CRIATIVIDADE</span><i>✦</i><span>PRESENÇA</span><i>✦</i><span>COMUNICAÇÃO</span><i>✦</i><span>ESTRATÉGIA</span><i>✦</i><span>COMUNIDADE</span><i>✦</i>
+  </div>
 </section>
-<section id="vip" class="section vip-section">
-<div class="container">
-<div class="vip-intro">
-<div>
-<span class="eyebrow">CONEXÕES MAIS PRÓXIMAS</span>
-<h2>Tem um lugar<br>para você aqui<span>.</span>
-</h2>
-</div>
-<p>Conheça as experiências VIP da comunidade e escolha o canal que combina com você.</p>
-</div>
-<div class="vip-grid">{% for p in vips %}{% include 'core/includes/vip_card.html' %}{% empty %}<div class="empty-state">
-<h3>Novidades em breve.</h3>
-<p>As próximas experiências VIP serão publicadas aqui.</p>
-</div>{% endfor %}</div>
-<a class="text-link vip-more" href="{% url 'vip' %}">Conhecer a comunidade VIP</a>
-</div>
+
+<section class="rf-section rf-intro-section">
+  <div class="container">
+    <div class="rf-section-head" data-reveal>
+      <div>
+        <span class="rf-kicker">UM UNIVERSO, VÁRIOS CAMINHOS</span>
+        <h2>Escolha como você quer <em>crescer por aqui.</em></h2>
+      </div>
+      <p>Conteúdo para quem quer comunicar melhor, criar com intenção e construir uma presença que realmente tenha identidade.</p>
+    </div>
+
+    <div class="rf-bento">
+      <a class="rf-bento-card rf-bento-course spotlight-card" href="{% url 'catalog' %}" data-reveal>
+        <span class="rf-bento-index">01</span>
+        <div>
+          <span class="rf-kicker">CURSOS E PRODUTOS</span>
+          <h3>Conhecimento que vira movimento.</h3>
+          <p>Aprenda estratégias, desenvolva sua voz e avance no seu ritmo.</p>
+        </div>
+        <span class="rf-bento-arrow">↗</span>
+      </a>
+      <a class="rf-bento-card rf-bento-vip spotlight-card" href="{% url 'vip' %}" data-reveal>
+        <span class="rf-bento-index">02</span>
+        <div>
+          <span class="rf-kicker">COMUNIDADE VIP</span>
+          <h3>Mais perto. Mais troca.</h3>
+          <p>Experiências e conteúdos para acompanhar de um jeito mais próximo.</p>
+        </div>
+        <span class="rf-bento-arrow">↗</span>
+      </a>
+      <a class="rf-bento-card rf-bento-affiliate spotlight-card" href="{% url 'affiliates' %}" data-reveal>
+        <span class="rf-bento-index">03</span>
+        <div>
+          <span class="rf-kicker">AFILIADOS</span>
+          <h3>Compartilhe o que faz sentido.</h3>
+        </div>
+        <span class="rf-bento-arrow">↗</span>
+      </a>
+      <a class="rf-bento-card rf-bento-partner spotlight-card" href="{% url 'partnerships' %}" data-reveal>
+        <span class="rf-bento-index">04</span>
+        <div>
+          <span class="rf-kicker">PARCERIAS</span>
+          <h3>Ideias fortes pedem boas conexões.</h3>
+        </div>
+        <span class="rf-bento-arrow">↗</span>
+      </a>
+    </div>
+  </div>
 </section>
-<section id="agenda" class="section">
-<div class="container">
-<div class="section-heading">
-<div>
-<span class="eyebrow">MARQUE NA AGENDA</span>
-<h2>Nossos próximos<br>encontros<span>.</span>
-</h2>
-</div>
-<p>Lives, lançamentos e datas para acompanhar de perto.</p>
-</div>
-<div class="agenda-list">{% for item in agenda %}<article class="agenda-item">
-<time datetime="{{ item.starts_at|date:'c' }}">
-<strong>{{ item.starts_at|date:'d' }}</strong>
-<span>{{ item.starts_at|date:'M' }} {{ item.starts_at|date:'Y' }}</span>
-</time>
-<div>
-<span class="eyebrow">{{ item.get_kind_display }} · {{ item.starts_at|date:'H:i' }} (Brasília)</span>
-<h3>{{ item.title }}</h3>{% if item.description %}<p>{{ item.description }}</p>{% endif %}</div>
-<span class="agenda-icon">{% include 'core/includes/icon.html' with name='calendar' %}</span>
-</article>{% empty %}<div class="agenda-empty">
-<span class="channel-icon">{% include 'core/includes/icon.html' with name='calendar' %}</span>
-<div>
-<h3>O próximo encontro vem aí.</h3>
-<p>Assim que uma nova data for anunciada, você encontra os detalhes aqui.</p>
-</div>
-</div>{% endfor %}</div>
-</div>
+
+{% if banners %}
+<section class="rf-section rf-highlight-section">
+  <div class="container">
+    <div class="rf-section-label"><span>EM DESTAQUE</span><i></i></div>
+    <div class="rf-highlight-grid">
+      {% for b in banners %}
+      <article class="rf-highlight-card" data-reveal>
+        {% if b.image_url %}<img src="{{ b.image_url }}" alt="" width="1280" height="640" loading="lazy" decoding="async">{% endif %}
+        <div class="rf-highlight-overlay"></div>
+        <div class="rf-highlight-content">
+          <span class="rf-kicker">NOVIDADES</span>
+          <h2>{{ b.title }}</h2>
+          {% if b.subtitle %}<p>{{ b.subtitle }}</p>{% endif %}
+          <a class="rf-btn rf-btn-light" href="{{ b.link }}">{{ b.button_text }} <span>↗</span></a>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
 </section>
-<section class="partnership-section">
-<div class="container partnership-inner">
-<div>
-<span class="eyebrow">PARCERIAS E PUBLICIDADE</span>
-<h2>Boas conexões.<br>Novas possibilidades<span>.</span>
-</h2>
-<p>Projetos, campanhas e oportunidades de parceria com a Rose.</p>
-</div>
-<a class="btn btn-primary" href="{% url 'partnerships' %}">Vamos conversar</a>
-</div>
+{% endif %}
+
+<section id="cursos" class="rf-section rf-courses-section">
+  <div class="container">
+    <div class="rf-section-head rf-section-head-light" data-reveal>
+      <div>
+        <span class="rf-kicker">CONHECIMENTO QUE SE TRANSFORMA</span>
+        <h2>Seu próximo passo pode começar <em>agora.</em></h2>
+      </div>
+      <div>
+        <p>Conteúdos pensados para desenvolver presença, comunicação, estratégia e criatividade.</p>
+        <a class="rf-inline-link" href="{% url 'catalog' %}">Ver todos os conteúdos <span>↗</span></a>
+      </div>
+    </div>
+    <div class="rf-product-grid">
+      {% for p in courses %}{% include 'core/includes/product_card.html' %}
+      {% empty %}<div class="empty-state"><h3>Novos cursos a caminho.</h3><p>Os conteúdos publicados pela Rose aparecerão aqui.</p></div>{% endfor %}
+      {% for p in products %}{% include 'core/includes/product_card.html' %}{% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="rf-section rf-vip-section">
+  <div class="rf-vip-orb"></div>
+  <div class="container">
+    <div class="rf-vip-heading" data-reveal>
+      <div>
+        <span class="rf-kicker">COMUNIDADE VIP</span>
+        <h2>Tem um lugar<br>para você <em>aqui.</em></h2>
+      </div>
+      <p>Escolha o canal que combina com você e acompanhe conteúdos, conversas e experiências mais próximas.</p>
+    </div>
+    <div class="rf-vip-grid">
+      {% for p in vips %}{% include 'core/includes/vip_card.html' %}
+      {% empty %}<div class="empty-state"><h3>Novidades em breve.</h3><p>As próximas experiências VIP serão publicadas aqui.</p></div>{% endfor %}
+    </div>
+    <div class="rf-vip-cta"><a class="rf-inline-link rf-inline-link-light" href="{% url 'vip' %}">Conhecer a comunidade VIP <span>↗</span></a></div>
+  </div>
+</section>
+
+<section id="agenda" class="rf-section rf-agenda-section">
+  <div class="container">
+    <div class="rf-section-head" data-reveal>
+      <div>
+        <span class="rf-kicker">AGENDA</span>
+        <h2>Próximos encontros,<br><em>novos capítulos.</em></h2>
+      </div>
+      <p>Lives, lançamentos e datas importantes para acompanhar de perto.</p>
+    </div>
+    <div class="rf-agenda-list">
+      {% for item in agenda %}
+      <article class="rf-agenda-item" data-reveal>
+        <time datetime="{{ item.starts_at|date:'c' }}"><strong>{{ item.starts_at|date:'d' }}</strong><span>{{ item.starts_at|date:'M' }}</span></time>
+        <div class="rf-agenda-main">
+          <span class="rf-kicker">{{ item.get_kind_display }} · {{ item.starts_at|date:'H:i' }} (Brasília)</span>
+          <h3>{{ item.title }}</h3>
+          {% if item.description %}<p>{{ item.description }}</p>{% endif %}
+        </div>
+        <span class="rf-agenda-arrow">↗</span>
+      </article>
+      {% empty %}
+      <div class="rf-agenda-empty" data-reveal>
+        <span class="rf-kicker">PRÓXIMOS PASSOS</span>
+        <h3>O próximo encontro vem aí.</h3>
+        <p>Assim que uma nova data for anunciada, você encontra os detalhes aqui.</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="rf-partner-cta">
+  <div class="container rf-partner-inner" data-reveal>
+    <div>
+      <span class="rf-kicker">PARCERIAS E PUBLICIDADE</span>
+      <h2>Boas ideias ficam ainda melhores quando encontram <em>as pessoas certas.</em></h2>
+    </div>
+    <a class="rf-btn rf-btn-light" href="{% url 'partnerships' %}">Vamos conversar <span>↗</span></a>
+  </div>
 </section>
 {% endblock %}
