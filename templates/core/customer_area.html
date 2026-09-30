@@ -1,80 +1,82 @@
 {% extends "base.html" %}
 {% block title %}Área do cliente • Rose Freitas{% endblock %}
 {% block extra_head %}<meta name="robots" content="noindex, nofollow">{% endblock %}
-{% block content %}{% if email %}<section class="page-hero customer-hero">
-<div class="container">
-<span class="eyebrow">SEU ESPAÇO DE APRENDIZADO</span>
-<div class="customer-heading">
-<div>
-<h1>Bom ter você aqui<span>.</span>
-</h1>
-<p>Acesso confirmado para <strong>{{ email }}</strong>.</p>
-</div>
-<form method="post">{% csrf_token %}<input type="hidden" name="action" value="logout">
-<button class="btn btn-outline" type="submit">Sair desta área</button>
-</form>
-</div>
-</div>
+{% block content %}
+{% if email %}
+<section class="rf-member-hero">
+  <div class="container rf-member-head">
+    <div>
+      <span class="rf-kicker">ÁREA DO CLIENTE</span>
+      <h1>Bom ter você <em>por aqui.</em></h1>
+      <p>Acesso confirmado para <strong>{{ email }}</strong>.</p>
+    </div>
+    <form method="post">{% csrf_token %}<input type="hidden" name="action" value="logout"><button class="rf-btn rf-btn-ghost" type="submit">Sair desta área</button></form>
+  </div>
 </section>
-<section class="section">
-<div class="container">
-<div class="section-heading">
-<h2>Meus conteúdos<span>.</span>
-</h2>
-<a class="text-link" href="{% url 'catalog' %}">Explorar outros conteúdos</a>
-</div>
-<div class="access-grid">{% for access in accesses %}<article class="access-card">{% if access.product.image_url %}<img src="{{ access.product.image_url }}" alt="" width="640" height="240" loading="lazy" decoding="async">{% endif %}<div class="access-card-body">
-<span class="eyebrow">ACESSO LIBERADO</span>
-<h3>{{ access.product.title }}</h3>
-<div class="material-list">{% for m in access.product.available_materials %}<a class="material-link" href="{{ m.url }}" target="_blank" rel="noopener noreferrer">{% include 'core/includes/icon.html' with name='book' %}<span>{{ m.title }}<small>Abrir material em outra aba</small>
-</span>{% include 'core/includes/icon.html' with name='link' %}</a>{% empty %}<p>Os materiais deste conteúdo serão adicionados em breve.</p>{% endfor %}</div>
-</div>
-</article>{% empty %}<div class="empty-state">
-<h3>Nenhum conteúdo ativo.</h3>
-<p>Quando a equipe liberar um conteúdo para seu e-mail, ele aparecerá aqui.</p>
-</div>{% endfor %}</div>
-</div>
-</section>{% else %}<section class="section">
-<div class="container application-grid access-login">
-<aside class="application-intro">
-<span class="eyebrow">ÁREA DO CLIENTE</span>
-<h1>Seu conhecimento.<br>Seu espaço<span>.</span>
-</h1>
-<p>Acesse os conteúdos e materiais que já foram liberados para você.</p>
-<div class="access-assurance">{% include 'core/includes/icon.html' with name='lock' %}<div>
-<strong>Um código. Seu acesso.</strong>
-<p>O código de verificação é temporário e enviado para seu e-mail cadastrado.</p>
-</div>
-</div>
-<a class="text-link" href="{% url 'catalog' %}">Ainda não tem um conteúdo? Conheça os cursos.</a>
-</aside>
-<div class="form-card">
-<span class="eyebrow">{% if pending_email %}CONFIRME SEU ACESSO{% else %}BEM-VINDA DE VOLTA{% endif %}</span>
-<h2>{% if pending_email %}Confira seu e-mail.{% else %}Entre para continuar.{% endif %}</h2>{% if pending_email %}<p>Digite o código de 6 dígitos enviado para <strong>{{ pending_email }}</strong>. Ele expira em 10 minutos.</p>
-<form method="post">{% csrf_token %}<input type="hidden" name="action" value="verify">
-<div class="field">
-<label for="login-code">Código de acesso</label>
-<input id="login-code" class="form-control otp-input" type="text" inputmode="numeric" pattern="[0-9]{6}" minlength="6" maxlength="6" name="code" autocomplete="one-time-code" required aria-describedby="code-hint">
-<small id="code-hint">Confira também a pasta de spam.</small>
-</div>
-<button class="btn btn-primary full" type="submit">Confirmar acesso</button>
-</form>
-<div class="access-retry">
-<form method="post">{% csrf_token %}<input type="hidden" name="action" value="request">
-<input type="hidden" name="email" value="{{ pending_email }}">
-<button type="submit" class="text-button">Reenviar código</button>
-</form>
-<form method="post">{% csrf_token %}<input type="hidden" name="action" value="logout">
-<button type="submit" class="text-button">Usar outro e-mail</button>
-</form>
-</div>{% else %}<p>Informe o e-mail cadastrado para receber seu código temporário.</p>
-<form method="post">{% csrf_token %}<input type="hidden" name="action" value="request">
-<div class="field">
-<label for="customer-email">E-mail cadastrado</label>
-<input id="customer-email" class="form-control" type="email" name="email" autocomplete="email" required placeholder="Seu e-mail">
-</div>
-<button class="btn btn-primary full" type="submit">Enviar código de acesso</button>
-<p class="form-note">O acesso depende da liberação do conteúdo para o e-mail informado.</p>
-</form>{% endif %}</div>
-</div>
-</section>{% endif %}{% endblock %}
+<section class="rf-section rf-courses-section">
+  <div class="container">
+    <div class="rf-section-head">
+      <div><span class="rf-kicker">SEUS CONTEÚDOS</span><h2>Continue de onde <em>parou.</em></h2></div>
+      <a class="rf-inline-link" href="{% url 'catalog' %}">Explorar outros conteúdos ↗</a>
+    </div>
+    <div class="rf-access-grid">
+      {% for access in accesses %}
+      <article class="rf-access-card" data-reveal>
+        {% if access.product.image_url %}<img src="{{ access.product.image_url }}" alt="" width="640" height="260" loading="lazy" decoding="async">{% endif %}
+        <div class="rf-access-body">
+          <span class="rf-kicker">ACESSO LIBERADO</span>
+          <h3>{{ access.product.title }}</h3>
+          <div class="rf-material-list">
+            {% for m in access.product.available_materials %}
+              <a href="{{ m.url }}" target="_blank" rel="noopener noreferrer"><span>{{ m.title }}</span><small>Abrir material ↗</small></a>
+            {% empty %}
+              <p>Os materiais deste conteúdo serão adicionados em breve.</p>
+            {% endfor %}
+          </div>
+        </div>
+      </article>
+      {% empty %}
+      <div class="empty-state"><h3>Nenhum conteúdo ativo.</h3><p>Quando a equipe liberar um conteúdo para seu e-mail, ele aparecerá aqui.</p></div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% else %}
+<section class="rf-auth-section">
+  <div class="container rf-auth-layout rf-customer-login">
+    <aside class="rf-auth-story" data-reveal>
+      <span class="rf-kicker">ÁREA DO CLIENTE</span>
+      <h1>Seu conhecimento.<br><em>Seu espaço.</em></h1>
+      <p>Acesse cursos e materiais já liberados para o seu e-mail.</p>
+      <div class="rf-assurance"><span>✦</span><div><strong>Acesso simples e temporário</strong><p>Você recebe um código de 6 dígitos no e-mail cadastrado.</p></div></div>
+      <a class="rf-back-link" href="{% url 'catalog' %}">Conhecer os cursos ↗</a>
+    </aside>
+
+    <div class="rf-auth-card" data-reveal>
+      {% if pending_email %}
+        <span class="rf-kicker">CONFIRME SEU ACESSO</span>
+        <h2>Confira seu e-mail.</h2>
+        <p>Digite o código enviado para <strong>{{ pending_email }}</strong>. Ele expira em 10 minutos.</p>
+        <form method="post" class="rf-form">{% csrf_token %}<input type="hidden" name="action" value="verify">
+          <div class="rf-field"><label for="login-code">Código de acesso</label><input id="login-code" class="form-control otp-input" type="text" inputmode="numeric" pattern="[0-9]{6}" minlength="6" maxlength="6" name="code" autocomplete="one-time-code" required><small>Confira também a pasta de spam.</small></div>
+          <button class="rf-btn rf-btn-primary rf-full" type="submit">Confirmar acesso ↗</button>
+        </form>
+        <div class="rf-auth-actions">
+          <form method="post">{% csrf_token %}<input type="hidden" name="action" value="request"><input type="hidden" name="email" value="{{ pending_email }}"><button type="submit" class="rf-text-button">Reenviar código</button></form>
+          <form method="post">{% csrf_token %}<input type="hidden" name="action" value="logout"><button type="submit" class="rf-text-button">Usar outro e-mail</button></form>
+        </div>
+      {% else %}
+        <span class="rf-kicker">BEM-VINDA DE VOLTA</span>
+        <h2>Entre para continuar.</h2>
+        <p>Informe o e-mail cadastrado para receber seu código temporário.</p>
+        <form method="post" class="rf-form">{% csrf_token %}<input type="hidden" name="action" value="request">
+          <div class="rf-field"><label for="customer-email">E-mail cadastrado</label><input id="customer-email" class="form-control" type="email" name="email" autocomplete="email" required placeholder="seu@email.com"></div>
+          <button class="rf-btn rf-btn-primary rf-full" type="submit">Enviar código ↗</button>
+          <small class="rf-form-note">O acesso depende da liberação do conteúdo para o e-mail informado.</small>
+        </form>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

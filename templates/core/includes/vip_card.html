@@ -1,15 +1,12 @@
-<article class="vip-card">
-{% if p.image_url %}<a class="vip-cover" href="{% url 'product_detail' p.slug %}" tabindex="-1" aria-hidden="true"><img src="{{ p.image_url }}" alt="" width="640" height="360" loading="lazy" decoding="async"></a>{% endif %}
-<div class="vip-card-top">
-<span class="channel-icon">{% include 'core/includes/icon.html' with name='community' %}</span>
-<span class="eyebrow">{{ p.get_vip_channel_display|default:'Comunidade' }}</span>
-<span class="vip-card-number">0{{ forloop.counter }}</span>
-</div>
-<h3>{{ p.title }}</h3>
-<p>{{ p.description }}</p>
-<div class="vip-card-bottom">
-<strong>{% if p.price > 0 %}R$ {{ p.price|floatformat:2 }}{% else %}Consulte as condições{% endif %}</strong>
-<a class="btn btn-primary" href="{% url 'vip_request' p.slug %}">Solicitar participação <span class="sr-only">em {{ p.title }}</span>
-</a>
-</div>
+<article class="rf-vip-card spotlight-card" data-reveal>
+  <div class="rf-vip-card-head">
+    <span class="rf-vip-channel">{{ p.get_vip_channel_display|default:'Comunidade VIP' }}</span>
+    <span class="rf-vip-number">0{{ forloop.counter }}</span>
+  </div>
+  <h3>{{ p.title }}</h3>
+  <p>{{ p.description }}</p>
+  <div class="rf-vip-card-bottom">
+    <strong>{% if p.price > 0 %}R$ {{ p.price|floatformat:2 }}{% else %}Consulte as condições{% endif %}</strong>
+    <a href="{% url 'vip_request' p.slug %}">Solicitar participação ↗</a>
+  </div>
 </article>
