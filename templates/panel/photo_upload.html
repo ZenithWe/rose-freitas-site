@@ -1,0 +1,19 @@
+<section class="photo-upload" aria-labelledby="photo-upload-title" data-photo-upload>
+  <div class="photo-upload-heading"><div><h3 id="photo-upload-title">Foto de apresentação</h3><p>A imagem aparece na capa do cartão e na página deste conteúdo.</p></div><span class="photo-upload-tag">Curso · Produto · Assinatura · VIP</span></div>
+  <div class="photo-upload-grid">
+    <div class="photo-preview" data-photo-preview data-original="{{ form.instance.image_url|default:'' }}">
+      <img {% if form.instance.image_url %}src="{{ form.instance.image_url }}"{% endif %} alt="Prévia da foto de apresentação" data-photo-image {% if not form.instance.image_url %}hidden{% endif %}>
+      <div class="photo-placeholder" data-photo-placeholder {% if form.instance.image_url %}hidden{% endif %}>{% include 'panel/icon.html' with icon='book' %}<span>Sua foto aparece aqui</span><small>Uma capa horizontal valoriza seu conteúdo.</small></div>
+    </div>
+    <div class="photo-upload-controls">
+      <div class="panel-field-label">{{ form.cover_upload.label_tag }}</div>
+      {{ form.cover_upload }}
+      {% if form.cover_upload.help_text %}<p class="panel-field-help" id="{{ form.cover_upload.auto_id }}_helptext">{{ form.cover_upload.help_text }}</p>{% endif %}
+      <p class="photo-recommendation">Prefira uma imagem horizontal, com o assunto principal ao centro.</p>
+      {% if form.cover_upload.errors %}<ul class="panel-field-errors" id="{{ form.cover_upload.auto_id }}_error">{% for error in form.cover_upload.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
+      {% if form.instance.has_uploaded_cover %}<div class="panel-checkbox-row photo-remove">{{ form.remove_cover }}{{ form.remove_cover.label_tag }}</div>{% if form.remove_cover.help_text %}<p class="panel-field-help" id="{{ form.remove_cover.auto_id }}_helptext">{{ form.remove_cover.help_text }}</p>{% endif %}{% endif %}
+      {% if form.remove_cover.errors %}<ul class="panel-field-errors" id="{{ form.remove_cover.auto_id }}_error">{% for error in form.remove_cover.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
+      <p class="photo-upload-feedback" role="status" aria-live="polite" data-photo-feedback>Escolha uma foto e salve o cadastro para publicá-la.</p>
+    </div>
+  </div>
+</section>

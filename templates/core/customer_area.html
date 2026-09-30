@@ -23,7 +23,7 @@
 </h2>
 <a class="text-link" href="{% url 'catalog' %}">Explorar outros conteúdos</a>
 </div>
-<div class="access-grid">{% for access in accesses %}<article class="access-card">{% if access.product.cover_url %}<img src="{{ access.product.cover_url }}" alt="" width="640" height="240" loading="lazy" decoding="async">{% endif %}<div class="access-card-body">
+<div class="access-grid">{% for access in accesses %}<article class="access-card">{% if access.product.image_url %}<img src="{{ access.product.image_url }}" alt="" width="640" height="240" loading="lazy" decoding="async">{% endif %}<div class="access-card-body">
 <span class="eyebrow">ACESSO LIBERADO</span>
 <h3>{{ access.product.title }}</h3>
 <div class="material-list">{% for m in access.product.available_materials %}<a class="material-link" href="{{ m.url }}" target="_blank" rel="noopener noreferrer">{% include 'core/includes/icon.html' with name='book' %}<span>{{ m.title }}<small>Abrir material em outra aba</small>

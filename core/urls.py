@@ -1,6 +1,7 @@
 from django.urls import path
 from django.contrib.auth.views import LoginView,LogoutView
 from . import views
+from . import material_views
 
 urlpatterns=[
     path("",views.home,name="home"),
@@ -11,6 +12,7 @@ urlpatterns=[
     path("robots.txt",views.robots,name="robots"),
     path("sitemap.xml",views.sitemap,name="sitemap"),
     path("produto/<slug:slug>/",views.product_detail,name="product_detail"),
+    path("imagem/produto/<int:pk>/<str:checksum>/",views.product_image,name="product_image"),
     path("vip/<slug:slug>/",views.vip_request,name="vip_request"),
     path("vip/sucesso/<int:pk>/",views.vip_success,name="vip_success"),
     path("area-do-cliente/",views.customer_area,name="customer_area"),
@@ -33,6 +35,10 @@ urlpatterns=[
     path("painel/pedidos/<int:pk>/",views.order_form,name="panel_order_edit"),
     path("painel/clientes/",views.customers,name="panel_customers"),
     path("painel/clientes/novo/",views.customer_form,name="panel_customer_new"),
+    path("painel/materiais/",material_views.materials,name="panel_materials"),
+    path("painel/materiais/novo/",material_views.material_form,name="panel_material_new"),
+    path("painel/materiais/<int:pk>/",material_views.material_form,name="panel_material_edit"),
+    path("painel/materiais/<int:pk>/excluir/",material_views.material_delete,name="panel_material_delete"),
     path("painel/financeiro/",views.finance,name="panel_finance"),
     path("painel/financeiro/despesa/",views.expense_form,name="panel_expense_new"),
     path("painel/configuracoes/",views.settings_view,name="panel_settings"),

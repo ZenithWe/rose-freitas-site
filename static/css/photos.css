@@ -1,0 +1,19 @@
+.photo-upload { grid-column: 1 / -1; margin: 0 0 28px; padding: 22px; border: 1px solid var(--panel-line); background: #d6b36b05; border-radius: 9px; }
+.photo-upload-heading { display: flex; justify-content: space-between; gap: 15px; margin-bottom: 20px; }
+.panel-body .photo-upload-heading h3 { font: 24px/1.2 Georgia, serif; margin-bottom: 8px; }
+.photo-upload-heading p { color: var(--panel-muted); font-size: 12px; }
+.photo-upload-tag { color: var(--panel-gold); font-size: 9px; line-height: 1.6; max-width: 150px; text-align: right; }
+.photo-upload-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 25px; align-items: center; }
+.photo-preview { min-width: 0; position: relative; aspect-ratio: 1.65; background: #2b2119; border: 1px solid #806346; border-radius: 6px; overflow: hidden; }
+.photo-preview img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.photo-placeholder { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; gap: 12px; text-align: center; color: #e6c8a1; }
+.photo-placeholder .panel-icon { width: 35px; height: 35px; }
+.photo-placeholder small { color: #c8b198; font-size: 10px; line-height: 1.6; }
+.photo-upload-controls { min-width: 0; }
+.photo-upload-controls input[type='file'] { width: 100%; max-width: 100%; min-height: 46px; font-size: 11px; padding: 7px; }
+.photo-upload-controls input::file-selector-button { background: var(--panel-gold); color: var(--panel-ink); border: 0; border-radius: 4px; padding: 9px 12px; margin-right: 10px; cursor: pointer; font: inherit; }
+.panel-body .photo-recommendation { color: var(--panel-muted); font-size: 10px; margin-top: 10px; }
+.panel-body .photo-upload-feedback { font-size: 11px; color: var(--panel-gold); margin-top: 14px; overflow-wrap: anywhere; }
+.photo-remove { margin-top: 18px; }
+.photo-remove label { font-size: 11px; }
+@media (max-width: 650px) { .photo-upload { padding: 17px; } .photo-upload-heading { flex-direction: column; } .photo-upload-tag { max-width: none; text-align: left; } .photo-upload-grid { grid-template-columns: 1fr; gap: 20px; } }

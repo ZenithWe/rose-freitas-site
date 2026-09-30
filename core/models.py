@@ -2,6 +2,7 @@ import secrets
 from decimal import Decimal
 from django.db import models
 from django.utils.text import slugify
+from django.urls import reverse
 
 class SiteSettings(models.Model):
     id=models.PositiveSmallIntegerField(primary_key=True,default=1,editable=False)
@@ -33,7 +34,7 @@ class Banner(models.Model):
     def __str__(self): return self.title
 
 class Product(models.Model):
-    KINDS=[("course","Curso"),("vip","VIP"),("product","Produto")]
+    KINDS=[("course","Curso"),("vip","VIP"),("product","Produto"),("subscription","Assinatura")]
     CHANNELS=[("","—"),("whatsapp","WhatsApp"),("telegram","Telegram")]
     kind=models.CharField(max_length=12,choices=KINDS,default="course")
     title=models.CharField(max_length=180)
@@ -54,6 +55,30 @@ class Product(models.Model):
         if not self.slug: self.slug=slugify(self.title)[:180]
         super().save(*args,**kwargs)
     def __str__(self): return self.title
+
+    @property
+    def has_uploaded_cover(self):
+        try:
+            return self.uploaded_cover is not None
+        except ProductImage.DoesNotExist:
+            return False
+
+    @property
+    def image_url(self):
+        if self.has_uploaded_cover:
+            return reverse("product_image",kwargs={"pk":self.pk,"checksum":self.uploaded_cover.checksum})
+        return self.cover_url
+
+class ProductImage(models.Model):
+    product=models.OneToOneField(Product,on_delete=models.CASCADE,related_name="uploaded_cover")
+    data=models.BinaryField(editable=False)
+    checksum=models.CharField(max_length=64,editable=False)
+    content_type=models.CharField(max_length=32,default="image/webp",editable=False)
+    width=models.PositiveIntegerField(editable=False)
+    height=models.PositiveIntegerField(editable=False)
+    byte_size=models.PositiveIntegerField(editable=False)
+    updated_at=models.DateTimeField(auto_now=True)
+    def __str__(self): return f"Foto • {self.product}"
 
 class Material(models.Model):
     product=models.ForeignKey(Product,on_delete=models.CASCADE,related_name="materials")

@@ -21,38 +21,42 @@ from django.views.decorators.http import require_POST, require_safe
 from django.views.decorators.cache import never_cache
 from .models import SiteSettings,Banner,Product,Material,VipRequest,Order,CustomerAccess,CustomerLoginCode,AgendaItem,Expense
 from .forms import ProductForm,VipRequestForm,BannerForm,AgendaForm,ExpenseForm,SettingsForm,OrderForm,CustomerAccessForm
+from .images import product_image
 
 def site_settings():
     return SiteSettings.objects.get_or_create(pk=1)[0]
+
+def product_queryset():
+    return Product.objects.select_related("uploaded_cover").defer("uploaded_cover__data")
 
 def home(request):
     return render(request,"core/home.html",{
         "site":site_settings(),
         "banners":Banner.objects.filter(active=True),
-        "courses":Product.objects.filter(active=True,kind="course"),
-        "products":Product.objects.filter(active=True,kind="product"),
-        "vips":Product.objects.filter(active=True,kind="vip"),
+        "courses":product_queryset().filter(active=True,kind="course"),
+        "products":product_queryset().filter(active=True,kind__in=["product","subscription"]),
+        "vips":product_queryset().filter(active=True,kind="vip"),
         "agenda":AgendaItem.objects.filter(active=True,starts_at__gte=timezone.now())[:4],
     })
 
 def catalog(request):
     return render(request,"core/catalog.html",{
         "site":site_settings(),
-        "courses":Product.objects.filter(active=True,kind="course"),
-        "products":Product.objects.filter(active=True,kind="product"),
+        "courses":product_queryset().filter(active=True,kind="course"),
+        "products":product_queryset().filter(active=True,kind__in=["product","subscription"]),
     })
 
 def vip(request):
     return render(request,"core/vip.html",{
         "site":site_settings(),
-        "vips":Product.objects.filter(active=True,kind="vip"),
+        "vips":product_queryset().filter(active=True,kind="vip"),
     })
 
 def affiliates(request):
     return render(request,"core/affiliates.html",{
         "site":site_settings(),
-        "courses":Product.objects.filter(active=True,kind="course"),
-        "products":Product.objects.filter(active=True,kind="product"),
+        "courses":product_queryset().filter(active=True,kind="course"),
+        "products":product_queryset().filter(active=True,kind__in=["product","subscription"]),
     })
 
 def partnerships(request):
@@ -77,11 +81,12 @@ def sitemap(request):
     return HttpResponse(tostring(root,encoding="utf-8",xml_declaration=True),content_type="application/xml; charset=utf-8")
 
 def product_detail(request,slug):
-    product=get_object_or_404(Product,slug=slug,active=True)
-    return render(request,"core/product_detail.html",{"site":site_settings(),"product":product})
+    product=get_object_or_404(product_queryset(),slug=slug,active=True)
+    image_absolute_url=request.build_absolute_uri(product.image_url) if product.image_url else ""
+    return render(request,"core/product_detail.html",{"site":site_settings(),"product":product,"image_absolute_url":image_absolute_url})
 
 def vip_request(request,slug):
-    product=get_object_or_404(Product,slug=slug,active=True,kind="vip")
+    product=get_object_or_404(product_queryset(),slug=slug,active=True,kind="vip")
     form=VipRequestForm(request.POST or None)
     if request.method=="POST" and form.is_valid():
         item=form.save(commit=False)
@@ -99,7 +104,7 @@ def vip_success(request,pk):
     if product_id is None:
         raise Http404
     item=get_object_or_404(VipRequest,pk=pk)
-    product=Product.objects.filter(pk=product_id).first()
+    product=product_queryset().filter(pk=product_id).first()
     return render(request,"core/vip_success.html",{"site":site_settings(),"item":item,"product":product})
 
 @never_cache
@@ -169,7 +174,7 @@ def customer_area(request):
             return redirect("customer_area")
     email=request.session.get("customer_verified","")
     pending_email=request.session.get("pending_customer_email","")
-    accesses=CustomerAccess.objects.filter(email__iexact=email,active=True).select_related("product").prefetch_related(Prefetch("product__materials",queryset=Material.objects.filter(active=True),to_attr="available_materials")) if email else []
+    accesses=CustomerAccess.objects.filter(email__iexact=email,active=True).select_related("product","product__uploaded_cover").defer("product__uploaded_cover__data").prefetch_related(Prefetch("product__materials",queryset=Material.objects.filter(active=True),to_attr="available_materials")) if email else []
     return render(request,"core/customer_area.html",{"site":site_settings(),"accesses":accesses,"email":email,"pending_email":pending_email})
 
 @staff_member_required(login_url="/painel/entrar/")
@@ -189,12 +194,12 @@ def dashboard(request):
 
 @staff_member_required(login_url="/painel/entrar/")
 def products(request):
-    return render(request,"panel/products.html",{"items":Product.objects.all()})
+    return render(request,"panel/products.html",{"items":product_queryset()})
 
 @staff_member_required(login_url="/painel/entrar/")
 def product_form(request,pk=None):
-    obj=get_object_or_404(Product,pk=pk) if pk else None
-    form=ProductForm(request.POST or None,instance=obj)
+    obj=get_object_or_404(product_queryset(),pk=pk) if pk else None
+    form=ProductForm(request.POST or None,request.FILES or None,instance=obj)
     if request.method=="POST" and form.is_valid():
         form.save(); messages.success(request,"Produto salvo."); return redirect("panel_products")
     return render(request,"panel/form.html",{"form":form,"title":"Editar produto" if obj else "Novo produto"})

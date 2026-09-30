@@ -1,5 +1,9 @@
 from datetime import date, timedelta
 from decimal import Decimal
+from io import BytesIO
+import struct
+from zlib import crc32
+from random import Random
 import re
 from xml.etree import ElementTree
 
@@ -8,6 +12,7 @@ from django.contrib.auth.hashers import make_password
 from django.core import mail
 from django.core.cache import cache
 from django.core.exceptions import ValidationError
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone
@@ -15,6 +20,10 @@ from django.utils import timezone
 from .apps import seed
 from .forms import AgendaForm, BannerForm, CustomerAccessForm, ExpenseForm, ProductForm
 from .models import AgendaItem, Banner, CustomerAccess, CustomerLoginCode, Expense, Material, Order, Product, SiteSettings, VipRequest
+from .models import ProductImage
+from .images import MAX_STORED_BYTES, MAX_UPLOAD_BYTES, normalize_upload
+from .views import product_queryset
+from PIL import Image, PngImagePlugin
 
 
 TEST_SETTINGS = {
@@ -422,3 +431,199 @@ class FormValidationTests(TestCase):
         access_form = CustomerAccessForm({"email": "cliente@example.com", "product": product.pk, "active": "on"})
         self.assertFalse(access_form.is_valid())
         self.assertIn("email", access_form.errors)
+
+
+def photo_upload(image_format="PNG", size=(400, 250), color=(60, 100, 170), **save_options):
+    output = BytesIO()
+    Image.new("RGB", size, color).save(output, format=image_format, **save_options)
+    return SimpleUploadedFile("foto." + image_format.lower(), output.getvalue(), content_type="image/" + image_format.lower())
+
+
+@override_settings(**TEST_SETTINGS)
+class ProductImageTests(TestCase):
+    def setUp(self):
+        self.staff = get_user_model().objects.create_superuser("fotos-admin", "admin@example.com", "test")
+        self.product = make_product(slug="produto-com-foto", cover_url="https://example.com/capa-legada.jpg", checkout_url="https://checkout.example.com/compra-existente")
+        self.payload = {"kind": "course", "title": self.product.title, "slug": self.product.slug,
+                        "description": self.product.description, "price": "49.90", "lessons": "3",
+                        "cover_url": self.product.cover_url, "checkout_url": self.product.checkout_url, "active": "on"}
+
+    def save_photo(self, upload=None):
+        form = ProductForm(self.payload, {"cover_upload": upload or photo_upload()}, instance=self.product)
+        self.assertTrue(form.is_valid(), form.errors)
+        return form.save()
+
+    def test_photo_upload_works_for_all_content_types_and_preserves_commercial_data(self):
+        self.client.force_login(self.staff)
+        for kind in ("course", "product", "vip", "subscription"):
+            with self.subTest(kind=kind):
+                self.payload["kind"] = kind
+                response = self.client.post(reverse("panel_product_edit", args=[self.product.pk]),
+                                            {**self.payload, "cover_upload": photo_upload()})
+                self.assertEqual(response.status_code, 302)
+                self.product.refresh_from_db()
+                image = ProductImage.objects.get(product=self.product)
+                self.assertEqual(self.product.kind, kind)
+                self.assertEqual(self.product.cover_url, "https://example.com/capa-legada.jpg")
+                self.assertEqual(self.product.checkout_url, "https://checkout.example.com/compra-existente")
+                self.assertEqual(self.product.price, Decimal("49.90"))
+                self.assertEqual(image.content_type, "image/webp")
+                self.assertTrue(self.product.has_uploaded_cover)
+                self.assertIn(image.checksum, self.product.image_url)
+        self.assertEqual(ProductImage.objects.filter(product=self.product).count(), 1)
+
+    def test_images_are_normalized_resized_and_stripped_of_metadata(self):
+        metadata = PngImagePlugin.PngInfo()
+        metadata.add_text("GPS", "private-location")
+        normalized = normalize_upload(photo_upload(size=(2200, 1100), pnginfo=metadata))
+        self.assertLessEqual(max(normalized.width, normalized.height), 1600)
+        self.assertLessEqual(len(normalized.data), MAX_STORED_BYTES)
+        with Image.open(BytesIO(normalized.data)) as result:
+            self.assertEqual(result.format, "WEBP")
+            self.assertEqual(result.size, (normalized.width, normalized.height))
+            self.assertNotIn("exif", result.info)
+            self.assertNotIn("icc_profile", result.info)
+            self.assertNotIn("xmp", result.info)
+            self.assertNotIn(b"private-location", normalized.data)
+        exif = Image.Exif()
+        exif[274] = 6
+        exif[315] = "private-author"
+        rotated = normalize_upload(photo_upload("JPEG", size=(160, 80), exif=exif))
+        self.assertEqual((rotated.width, rotated.height), (80, 160))
+        self.assertNotIn(b"private-author", rotated.data)
+
+    def test_jpeg_png_and_webp_are_accepted_using_actual_content(self):
+        for image_format in ("JPEG", "PNG", "WEBP"):
+            with self.subTest(image_format=image_format):
+                normalized = normalize_upload(photo_upload(image_format))
+                with Image.open(BytesIO(normalized.data)) as result:
+                    self.assertEqual(result.format, "WEBP")
+
+    def test_high_entropy_transparent_png_is_reduced_within_storage_limit(self):
+        output = BytesIO()
+        Image.frombytes("RGBA", (800, 800), Random(23).randbytes(800*800*4)).save(output, format="PNG")
+        self.assertLess(len(output.getvalue()), MAX_UPLOAD_BYTES)
+        normalized = normalize_upload(SimpleUploadedFile("transparente.png", output.getvalue()))
+        self.assertLessEqual(len(normalized.data), MAX_STORED_BYTES)
+        self.assertLessEqual(max(normalized.width, normalized.height), 640)
+        with Image.open(BytesIO(normalized.data)) as result:
+            self.assertEqual(result.mode, "RGBA")
+
+    def test_invalid_svg_truncated_animated_and_oversized_uploads_are_rejected_without_data_loss(self):
+        self.save_photo()
+        original = ProductImage.objects.get(product=self.product).checksum
+        animation = BytesIO()
+        Image.new("RGB", (20, 20), "red").save(animation, format="PNG", save_all=True,
+             append_images=[Image.new("RGB", (20, 20), "blue")], duration=100, loop=0)
+        samples = [SimpleUploadedFile("foto.jpg", b'<svg xmlns="http://www.w3.org/2000/svg"><script>alert(1)</script></svg>', content_type="image/jpeg"),
+                   SimpleUploadedFile("foto.png", b"invalid-image"),
+                   SimpleUploadedFile("foto.png", photo_upload().read()[:40]),
+                   SimpleUploadedFile("foto.png", animation.getvalue()),
+                   SimpleUploadedFile("foto.png", b"x" * (MAX_UPLOAD_BYTES+1))]
+        for upload in samples:
+            with self.subTest(name=upload.name, size=upload.size):
+                form = ProductForm(self.payload, {"cover_upload": upload}, instance=self.product)
+                self.assertFalse(form.is_valid())
+                self.assertIn("cover_upload", form.errors)
+                self.assertEqual(ProductImage.objects.get(product=self.product).checksum, original)
+
+    def test_declared_pixel_bombs_are_rejected_before_decode(self):
+        original = photo_upload().read()
+        for dimensions in ((5000, 5000), (10000, 10000)):
+            with self.subTest(dimensions=dimensions):
+                size = struct.pack(">II", *dimensions)
+                checksum = struct.pack(">I", crc32(original[12:16]+size+original[24:29]) & 0xffffffff)
+                image = original[:16]+size+original[24:29]+checksum+original[33:]
+                with self.assertRaises(ValidationError):
+                    normalize_upload(SimpleUploadedFile("foto.png", image))
+
+    def test_replacing_removing_and_unrelated_edits_preserve_legacy_fallback(self):
+        self.save_photo()
+        old_url = self.product.image_url
+        old_checksum = ProductImage.objects.get(product=self.product).checksum
+        unchanged = ProductForm(self.payload, instance=self.product)
+        self.assertTrue(unchanged.is_valid(), unchanged.errors)
+        unchanged.save()
+        self.assertEqual(ProductImage.objects.get(product=self.product).checksum, old_checksum)
+        self.save_photo(photo_upload(color=(200, 30, 80)))
+        self.assertNotEqual(self.product.image_url, old_url)
+        self.assertEqual(self.client.get(old_url).status_code, 404)
+        remove = ProductForm({**self.payload, "remove_cover": "on"}, instance=self.product)
+        self.assertTrue(remove.is_valid(), remove.errors)
+        remove.save()
+        self.assertFalse(ProductImage.objects.filter(product=self.product).exists())
+        self.assertFalse(self.product.has_uploaded_cover)
+        self.assertEqual(self.product.image_url, self.product.cover_url)
+
+    def test_native_admin_commit_false_save_persists_photo(self):
+        self.client.force_login(self.staff)
+        response = self.client.post(reverse("admin:core_product_change", args=[self.product.pk]),
+                                    {**self.payload, "cover_upload": photo_upload(), "_save": "Salvar"})
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(ProductImage.objects.filter(product=self.product).exists())
+
+    def test_served_images_have_valid_mime_etag_revalidation_and_head(self):
+        self.save_photo()
+        url = self.product.image_url
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.headers["Content-Type"], "image/webp")
+        self.assertEqual(response.headers["X-Content-Type-Options"], "nosniff")
+        self.assertEqual(response.headers["Cache-Control"], "public, max-age=0, must-revalidate")
+        self.assertEqual(len(response.content), int(response.headers["Content-Length"]))
+        with Image.open(BytesIO(response.content)) as image:
+            self.assertEqual(image.format, "WEBP")
+        revalidated = self.client.get(url, HTTP_IF_NONE_MATCH=response.headers["ETag"])
+        self.assertEqual(revalidated.status_code, 304)
+        self.assertEqual(revalidated.content, b"")
+        head = self.client.head(url)
+        self.assertEqual(head.content, b"")
+        self.assertEqual(head.headers["Content-Length"], response.headers["Content-Length"])
+        self.assertEqual(self.client.post(url).status_code, 405)
+
+    def test_inactive_images_require_staff_or_verified_customer_with_current_active_access(self):
+        self.save_photo()
+        url = self.product.image_url
+        etag = self.client.get(url).headers["ETag"]
+        self.product.active = False
+        self.product.save(update_fields=["active"])
+        self.assertEqual(self.client.get(url, HTTP_IF_NONE_MATCH=etag).status_code, 404)
+        self.client.force_login(self.staff)
+        staff_response = self.client.get(url, HTTP_IF_NONE_MATCH=etag)
+        self.assertEqual(staff_response.status_code, 200)
+        self.assertEqual(staff_response.headers["Cache-Control"], "private, no-store")
+        customer = Client()
+        session = customer.session
+        session["customer_verified"] = "cliente@example.com"
+        session.save()
+        self.assertEqual(customer.get(url).status_code, 404)
+        access = CustomerAccess.objects.create(email="Cliente@Example.com", product=self.product)
+        customer_response = customer.get(url, HTTP_IF_NONE_MATCH=etag)
+        self.assertEqual(customer_response.status_code, 200)
+        self.assertEqual(customer_response.headers["Cache-Control"], "private, no-store")
+        access.active = False
+        access.save()
+        self.assertEqual(customer.get(url).status_code, 404)
+
+    def test_listing_metadata_is_prefetched_without_loading_image_bytes(self):
+        self.save_photo()
+        second = make_product(slug="produto-sem-foto")
+        with self.assertNumQueries(1):
+            products = list(product_queryset().filter(pk__in=[self.product.pk, second.pk]))
+            urls = [product.image_url for product in products]
+        self.assertIn(self.product.image_url, urls)
+        with self.assertNumQueries(0):
+            cover = next(product.uploaded_cover for product in products if product.pk == self.product.pk)
+            self.assertIn("data", cover.get_deferred_fields())
+
+    def test_subscription_is_a_visible_valid_product_type_without_recurring_payment_changes(self):
+        self.payload["kind"] = "subscription"
+        self.save_photo()
+        self.assertEqual(self.product.get_kind_display(), "Assinatura")
+        for name in ("home", "catalog"):
+            response = self.client.get(reverse(name))
+            self.assertIn(self.product, list(response.context["products"]))
+        response = self.client.get(reverse("product_detail", args=[self.product.slug]), secure=True)
+        self.assertEqual(response.context["image_absolute_url"], "https://testserver" + self.product.image_url)
+        self.assertContains(response, self.product.checkout_url)
+        self.assertEqual(self.client.get(reverse("vip_request", args=[self.product.slug])).status_code, 404)

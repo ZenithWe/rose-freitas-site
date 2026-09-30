@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
-<section class="hero">
+<section class="hero editorial-hero">
+  {% include 'core/includes/background_paths.html' %}
   <div class="container hero-inner">
     <div class="hero-copy">
 <div class="eyebrow">
@@ -22,7 +23,7 @@
 <div class="feature-top">
 <span class="eyebrow">{% if featured %}CONTEÚDO EM FOCO{% else %}ROSE FREITAS{% endif %}</span>
 <span class="feature-seal">RF</span>
-</div>{% if featured.cover_url %}<img class="hero-feature-image" src="{{ featured.cover_url }}" alt="{{ featured.title }}" width="640" height="460" fetchpriority="high">{% else %}<div class="feature-monogram" aria-hidden="true">R<span>F</span>
+</div>{% if featured.image_url %}<img class="hero-feature-image" src="{{ featured.image_url }}" alt="{{ featured.title }}" width="640" height="460" fetchpriority="high">{% else %}<div class="feature-monogram" aria-hidden="true">R<span>F</span>
 <i>.</i>
 </div>{% endif %}<div class="feature-content">{% if featured %}<span class="eyebrow">{{ featured.get_kind_display }}</span>
 <h2>{{ featured.title }}</h2>
@@ -63,7 +64,7 @@
 </article>{% endfor %}</div>
 </div>
 </section>{% endif %}
-<section id="cursos" class="section">
+<section id="cursos" class="section paper-section">
 <div class="container">
 <div class="section-heading">
 <div>
