@@ -3,13 +3,13 @@
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}Rose Freitas • Conteúdo, cursos e comunidade{% endblock %}</title>
   <meta name="description" content="{% block description %}{{ site.hero_subtitle|default:'Conheça os cursos, produtos e experiências VIP de Rose Freitas. Conteúdo, presença, estratégia e comunidade.'|truncatechars:160 }}{% endblock %}">
-  <meta name="theme-color" content="#241a16">
+  <meta name="theme-color" content="#10131a">
   <meta property="og:site_name" content="Rose Freitas">
-<meta property="og:type" content="website">
-<meta property="og:locale" content="pt_BR">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="pt_BR">
   <meta property="og:title" content="{% block og_title %}Rose Freitas • Conteúdo, cursos e comunidade{% endblock %}">
   <meta property="og:description" content="{% block og_description %}{{ site.hero_subtitle|default:'Conheça os cursos, produtos e experiências VIP de Rose Freitas.'|truncatechars:160 }}{% endblock %}">
   <meta property="og:url" content="{{ request.scheme }}://{{ request.get_host }}{{ request.path }}">
@@ -20,68 +20,96 @@
   <link rel="icon" href="{% static 'img/favicon.svg' %}" type="image/svg+xml">
   <link rel="stylesheet" href="{% static 'css/style.css' %}">
   <link rel="stylesheet" href="{% static 'css/editorial.css' %}">
+  <link rel="stylesheet" href="{% static 'css/rose-luxe.css' %}">
   {% block extra_head %}{% endblock %}
-  <script src="{% static 'js/site.js' %}" defer>
-</script>
+  <script src="{% static 'js/site.js' %}" defer></script>
   <script src="{% static 'js/editorial.js' %}" defer></script>
+  <script src="{% static 'js/rose-luxe.js' %}" defer></script>
 </head>
-<body>
+<body class="rose-shell {% block body_class %}{% endblock %}">
 <a class="skip-link" href="#main-content">Pular para o conteúdo</a>
-<header class="site-header">
-  <div class="container site-nav">
-    <a class="brand" href="{% url 'home' %}" aria-label="Rose Freitas, página inicial">
-<strong>rose<span>.</span>
-</strong>
-<small>FREITAS</small>
-</a>
-    <button type="button" class="menu-btn" aria-label="Abrir menu" aria-expanded="false" aria-controls="site-menu">{% include 'core/includes/icon.html' with name='menu' %}</button>
-    <nav id="site-menu" class="site-menu" aria-label="Navegação principal">
-      <a href="{% url 'catalog' %}" {% if request.resolver_match.url_name == 'catalog' %}aria-current="page"{% endif %}>Cursos e produtos</a>
+
+<header class="site-header rf-header" data-site-header>
+  <div class="container rf-nav">
+    <a class="rf-brand" href="{% url 'home' %}" aria-label="Rose Freitas, página inicial">
+      <span class="rf-brand-mark" aria-hidden="true"><i></i><b>R</b></span>
+      <span class="rf-brand-copy"><strong>Rose Freitas</strong><small>conteúdo • presença • comunidade</small></span>
+    </a>
+
+    <button type="button" class="menu-btn rf-menu-btn" aria-label="Abrir menu" aria-expanded="false" aria-controls="site-menu">
+      <span></span><span></span>
+    </button>
+
+    <nav id="site-menu" class="site-menu rf-menu" aria-label="Navegação principal">
+      <a href="{% url 'catalog' %}" {% if request.resolver_match.url_name == 'catalog' %}aria-current="page"{% endif %}>Cursos</a>
       <a href="{% url 'vip' %}" {% if request.resolver_match.url_name == 'vip' %}aria-current="page"{% endif %}>VIP</a>
       <a href="{% url 'affiliates' %}" {% if request.resolver_match.url_name == 'affiliates' %}aria-current="page"{% endif %}>Afiliados</a>
       <a href="{% url 'partnerships' %}" {% if request.resolver_match.url_name == 'partnerships' %}aria-current="page"{% endif %}>Parcerias</a>
-      <a class="nav-client" href="{% url 'customer_area' %}" {% if request.resolver_match.url_name == 'customer_area' %}aria-current="page"{% endif %}>{% include 'core/includes/icon.html' with name='user' %} Área do cliente</a>
+      <a class="nav-client rf-client-link" href="{% url 'customer_area' %}" {% if request.resolver_match.url_name == 'customer_area' %}aria-current="page"{% endif %}>
+        <span class="rf-client-dot"></span> Área do cliente
+      </a>
     </nav>
   </div>
 </header>
-{% if messages %}<div class="container flash-wrap" aria-live="polite">{% for message in messages %}<div class="flash {{ message.tags }}" role="status">
-<span>{{ message }}</span>
-<button type="button" data-dismiss-message aria-label="Fechar mensagem">{% include 'core/includes/icon.html' with name='close' %}</button>
-</div>{% endfor %}</div>{% endif %}
-<main id="main-content" tabindex="-1">{% block content %}{% endblock %}</main>
-<footer id="contato" class="site-footer">
-  <div class="container footer-top">
-    <div class="footer-brand">
-<a class="brand" href="{% url 'home' %}" aria-label="Rose Freitas, página inicial">
-<strong>rose<span>.</span>
-</strong>
-<small>FREITAS</small>
-</a>
-<p>Conteúdo, presença,<br>estratégia e comunidade.</p>
-</div>
-    <div>
-<h2>Explore</h2>
-<a href="{% url 'catalog' %}">Cursos e produtos</a>
-<a href="{% url 'vip' %}">Experiências VIP</a>
-<a href="{% url 'home' %}#agenda">Agenda</a>
-<a href="{% url 'customer_area' %}">Área do cliente</a>
-</div>
-    <div>
-<h2>Conexões</h2>
-<a href="{% url 'affiliates' %}">Afiliados</a>
-<a href="{% url 'partnerships' %}">Parcerias e publicidade</a>{% if site.whatsapp %}<a href="https://wa.me/{{ site.whatsapp }}" target="_blank" rel="noopener noreferrer">Fale com a equipe <span class="sr-only">(abre em outra aba)</span>
-</a>{% endif %}</div>
-    {% if site.instagram or site.youtube or site.tiktok %}<div>
-<h2>Nas redes</h2>{% if site.instagram %}<a href="{{ site.instagram }}" target="_blank" rel="noopener noreferrer">Instagram <span class="sr-only">(abre em outra aba)</span>
-</a>{% endif %}{% if site.youtube %}<a href="{{ site.youtube }}" target="_blank" rel="noopener noreferrer">YouTube <span class="sr-only">(abre em outra aba)</span>
-</a>{% endif %}{% if site.tiktok %}<a href="{{ site.tiktok }}" target="_blank" rel="noopener noreferrer">TikTok <span class="sr-only">(abre em outra aba)</span>
-</a>{% endif %}</div>{% endif %}
+
+{% if messages %}
+<div class="container flash-wrap rf-flash-wrap" aria-live="polite">
+  {% for message in messages %}
+  <div class="flash {{ message.tags }}" role="status">
+    <span>{{ message }}</span>
+    <button type="button" data-dismiss-message aria-label="Fechar mensagem">{% include 'core/includes/icon.html' with name='close' %}</button>
   </div>
-  <div class="container footer-bottom">
-<span>© {% now "Y" %} Rose Freitas</span>
-<span>Feito para aprender. Criado para conectar.</span>
-<a href="{% url 'dashboard' %}">Acesso administrativo</a>
+  {% endfor %}
 </div>
+{% endif %}
+
+<main id="main-content" tabindex="-1">{% block content %}{% endblock %}</main>
+
+<footer id="contato" class="site-footer rf-footer">
+  <div class="container">
+    <div class="rf-footer-cta">
+      <div>
+        <span class="rf-kicker">CONTINUE POR PERTO</span>
+        <h2>Ideias, conteúdo e conexões que continuam depois da página.</h2>
+      </div>
+      <div class="rf-footer-socials">
+        {% if site.instagram %}<a href="{{ site.instagram }}" target="_blank" rel="noopener noreferrer">Instagram ↗</a>{% endif %}
+        {% if site.youtube %}<a href="{{ site.youtube }}" target="_blank" rel="noopener noreferrer">YouTube ↗</a>{% endif %}
+        {% if site.tiktok %}<a href="{{ site.tiktok }}" target="_blank" rel="noopener noreferrer">TikTok ↗</a>{% endif %}
+      </div>
+    </div>
+
+    <div class="rf-footer-grid">
+      <div class="rf-footer-brand">
+        <a class="rf-brand rf-brand-footer" href="{% url 'home' %}">
+          <span class="rf-brand-mark" aria-hidden="true"><i></i><b>R</b></span>
+          <span class="rf-brand-copy"><strong>Rose Freitas</strong><small>conteúdo • presença • comunidade</small></span>
+        </a>
+        <p>Um espaço para aprender, se expressar, criar presença e fazer parte de uma comunidade.</p>
+      </div>
+
+      <div>
+        <h3>Explore</h3>
+        <a href="{% url 'catalog' %}">Cursos e produtos</a>
+        <a href="{% url 'vip' %}">Experiências VIP</a>
+        <a href="{% url 'home' %}#agenda">Agenda</a>
+        <a href="{% url 'customer_area' %}">Área do cliente</a>
+      </div>
+
+      <div>
+        <h3>Conexões</h3>
+        <a href="{% url 'affiliates' %}">Afiliados</a>
+        <a href="{% url 'partnerships' %}">Parcerias e publicidade</a>
+        {% if site.whatsapp %}<a href="https://wa.me/{{ site.whatsapp }}" target="_blank" rel="noopener noreferrer">Falar com a equipe ↗</a>{% endif %}
+      </div>
+    </div>
+
+    <div class="rf-footer-bottom">
+      <span>© {% now "Y" %} Rose Freitas</span>
+      <span>Feito para aprender. Criado para conectar.</span>
+      <a href="{% url 'dashboard' %}">Acesso administrativo</a>
+    </div>
+  </div>
 </footer>
 </body>
 </html>
