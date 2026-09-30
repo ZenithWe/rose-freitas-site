@@ -26,6 +26,7 @@
       <span class="panel-nav-label">Negócio</span>
       <a href="{% url 'dashboard' %}" {% if request.resolver_match.url_name == 'dashboard' %}class="active" aria-current="page"{% endif %}>{% include "panel/icon.html" with icon="grid" %}<span>Visão geral</span></a>
       <a href="{% url 'panel_products' %}" {% if 'product' in request.resolver_match.url_name %}class="active" aria-current="page"{% endif %}>{% include "panel/icon.html" with icon="book" %}<span>Cursos e produtos</span></a>
+      <a href="{% url 'admin:core_material_changelist' %}">{% include "panel/icon.html" with icon="book" %}<span>Materiais</span></a>
       <a href="{% url 'panel_vip' %}" {% if request.resolver_match.url_name == 'panel_vip' or request.resolver_match.url_name == 'panel_vip_status' %}class="active" aria-current="page"{% endif %}>{% include "panel/icon.html" with icon="star" %}<span>Solicitações VIP</span></a>
       <a href="{% url 'panel_orders' %}" {% if 'order' in request.resolver_match.url_name %}class="active" aria-current="page"{% endif %}>{% include "panel/icon.html" with icon="receipt" %}<span>Pedidos</span></a>
       <a href="{% url 'panel_customers' %}" {% if 'customer' in request.resolver_match.url_name %}class="active" aria-current="page"{% endif %}>{% include "panel/icon.html" with icon="users" %}<span>Clientes</span></a>

@@ -1,0 +1,112 @@
+/* Native Django admin keeps its templates, controls, permissions and JavaScript. */
+:root, html[data-theme="auto"], html[data-theme="dark"] {
+  --primary: #292820;
+  --secondary: #0b0c0d;
+  --accent: #d6b36b;
+  --primary-fg: #f4f0e7;
+  --body-fg: #e6e2d9;
+  --body-bg: #121416;
+  --body-quiet-color: #b0b1b7;
+  --body-medium-color: #d1cec6;
+  --body-loud-color: #f4f0e7;
+  --header-color: #c2b9a8;
+  --header-branding-color: #f4f0e7;
+  --header-bg: #0b0c0d;
+  --header-link-color: #e1c58d;
+  --breadcrumbs-fg: #aca99f;
+  --breadcrumbs-link-fg: #e1c58d;
+  --breadcrumbs-bg: #1a1d20;
+  --link-fg: #d6b36b;
+  --link-hover-color: #f0d49b;
+  --link-selected-fg: #e9cd95;
+  --hairline-color: #30343a;
+  --border-color: #45494f;
+  --error-fg: #efa6a6;
+  --message-success-bg: #203c2b;
+  --message-warning-bg: #453a24;
+  --message-error-bg: #432629;
+  --darkened-bg: #1a1d20;
+  --selected-bg: #252724;
+  --selected-row: #353023;
+  --button-fg: #181710;
+  --button-bg: #d6b36b;
+  --button-hover-bg: #e4c58b;
+  --default-button-bg: #d6b36b;
+  --default-button-hover-bg: #e4c58b;
+  --close-button-bg: #c4bca9;
+  --close-button-hover-bg: #ddd4c2;
+  --delete-button-bg: #8b4149;
+  --delete-button-hover-bg: #a24b55;
+  --object-tools-fg: #e1c58d;
+  --object-tools-bg: #323127;
+  --object-tools-hover-bg: #454131;
+  color-scheme: dark;
+}
+html[data-theme="light"] {
+  --primary: #282820;
+  --secondary: #0b0c0d;
+  --accent: #d6b36b;
+  --primary-fg: #f4f0e7;
+  --body-fg: #252521;
+  --body-bg: #f4f0e7;
+  --body-quiet-color: #67665f;
+  --body-medium-color: #41413c;
+  --body-loud-color: #161713;
+  --header-color: #c2b9a8;
+  --header-branding-color: #f4f0e7;
+  --header-bg: #0b0c0d;
+  --header-link-color: #e1c58d;
+  --breadcrumbs-fg: #5f5c52;
+  --breadcrumbs-link-fg: #765923;
+  --breadcrumbs-bg: #e8e1d3;
+  --link-fg: #765923;
+  --link-hover-color: #4e3913;
+  --link-selected-fg: #674d20;
+  --hairline-color: #ddd6c8;
+  --border-color: #bdb5a4;
+  --error-fg: #983943;
+  --message-success-bg: #dceade;
+  --message-warning-bg: #f0e5c9;
+  --message-error-bg: #f1dade;
+  --darkened-bg: #ebe6db;
+  --selected-bg: #e1d8c5;
+  --selected-row: #ece0c4;
+  --button-fg: #181710;
+  --button-bg: #d6b36b;
+  --button-hover-bg: #e4c58b;
+  --default-button-bg: #d6b36b;
+  --default-button-hover-bg: #e4c58b;
+  --close-button-bg: #d4c9b1;
+  --close-button-hover-bg: #c5b68f;
+  --delete-button-bg: #8b4149;
+  --delete-button-hover-bg: #a24b55;
+  --object-tools-fg: #e1c58d;
+  --object-tools-bg: #323127;
+  --object-tools-hover-bg: #454131;
+  color-scheme: light;
+}
+#header { min-height: 92px; border-bottom: 1px solid #d6b36b30; }
+#branding { display: flex; align-items: center; flex-wrap: wrap; gap: 22px; }
+#branding #site-name { margin: 0; }
+#site-name .rose-admin-brand { display: block; color: #f4f0e7; font: 42px/.95 Georgia, "Times New Roman", serif; letter-spacing: -.07em; }
+.rose-admin-brand > span { color: #d6b36b; }
+.rose-admin-brand > small { display: block; margin-top: 9px; color: #b6aa92; font: 8px/1.5 "Segoe UI", sans-serif; letter-spacing: .22em; }
+#branding .rose-admin-return { color: #d6b36b; font-size: 11px; padding: 9px 0; }
+#branding .rose-admin-return:hover { color: #f0d49b; text-decoration: underline; text-underline-offset: 4px; }
+#content > h1 { font: 34px/1.2 Georgia, "Times New Roman", serif; letter-spacing: -.03em; }
+.breadcrumbs a { text-decoration: underline; text-underline-offset: 3px; }
+.module, .submit-row { border-radius: 5px; }
+input:not([type="checkbox"]):not([type="radio"]), select, textarea { border-radius: 4px; }
+input[type="text"], input[type="password"], input[type="email"], input[type="url"], input[type="number"], select, textarea { max-width: 100%; box-sizing: border-box; }
+input[type="checkbox"], input[type="radio"] { accent-color: #d6b36b; }
+.button, input[type="submit"], input[type="button"], .submit-row input, a.button { border-radius: 4px; }
+.deletelink, .submit-row a.deletelink { color: #fff0f0 !important; }
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid #d6b36b; outline-offset: 3px; }
+#changelist-form .results { overflow-x: auto; }
+@media (max-width: 767px) {
+  #branding { justify-content: center; gap: 14px; }
+  #site-name .rose-admin-brand { font-size: 35px; }
+  #content > h1 { font-size: 28px; }
+  .aligned .form-row input:not([type="checkbox"]):not([type="radio"]), .aligned .form-row textarea { min-width: 0; max-width: 100%; }
+  .related-widget-wrapper { min-width: 0; max-width: 100%; }
+}

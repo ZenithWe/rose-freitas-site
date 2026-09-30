@@ -82,8 +82,29 @@ class PublicFlowsTests(TestCase):
         self.assertContains(receipt, settings.pix_key)
         self.assertContains(receipt, settings.pix_name)
         self.assertContains(receipt, "https://wa.me/5511999999999")
+        self.assertContains(receipt, item.get_status_display())
         self.assertIn("no-store", receipt.headers["Cache-Control"])
         self.assertEqual(Client().get(response.url).status_code, 404)
+
+    def test_confirmed_and_cancelled_vip_receipts_show_actual_status_without_payment_instructions(self):
+        settings = SiteSettings.objects.get(pk=1)
+        settings.pix_key = "pix-nao-pagar@example.com"
+        settings.pix_name = "Titular do Pix"
+        settings.whatsapp = "5511999999999"
+        settings.save()
+        submission = self.client.post(reverse("vip_request", args=[self.vip.slug]), {"full_name": "Cliente VIP", "phone": "5511999999999", "email": "vip@example.com"})
+        item = VipRequest.objects.get()
+        for status in ("confirmed", "cancelled"):
+            with self.subTest(status=status):
+                item.status = status
+                item.save(update_fields=["status", "updated_at"])
+                receipt = self.client.get(submission.url)
+                self.assertContains(receipt, item.get_status_display())
+                self.assertNotContains(receipt, "Aguardando confirmação")
+                self.assertNotContains(receipt, settings.pix_key)
+                self.assertNotContains(receipt, settings.pix_name)
+                self.assertNotContains(receipt, "data-copy-pix")
+                self.assertNotContains(receipt, "Enviar comprovante")
 
     def test_affiliate_and_partnership_pages_use_configured_commercial_contact(self):
         settings = SiteSettings.objects.get(pk=1)
