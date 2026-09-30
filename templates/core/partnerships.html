@@ -1,35 +1,31 @@
 {% extends "base.html" %}
 {% block title %}Parcerias e publicidade • Rose Freitas{% endblock %}
-{% block description %}Entre em contato com a equipe de Rose Freitas para conversar sobre projetos, campanhas, parcerias e publicidade.{% endblock %}
-{% block og_title %}Parcerias e publicidade • Rose Freitas{% endblock %}
-{% block twitter_title %}Parcerias e publicidade • Rose Freitas{% endblock %}
-{% block og_description %}Projetos, campanhas e oportunidades de parceria com Rose Freitas.{% endblock %}
-{% block twitter_description %}Projetos, campanhas e oportunidades de parceria com Rose Freitas.{% endblock %}
-{% block content %}<section class="page-hero">
-<div class="container">
-<span class="eyebrow">PARCERIAS E PUBLICIDADE</span>
-<h1>Vamos construir<br>uma boa conexão<span>.</span>
-</h1>
-<p>Projetos, campanhas e ideias que aproximam marcas, conteúdo e comunidade.</p>
-</div>
+{% block content %}
+<section class="rf-page-hero rf-page-plum">
+  <div class="container rf-page-hero-inner">
+    <span class="rf-kicker">PARCERIAS E PUBLICIDADE</span>
+    <h1>Boas marcas criam <em>boas histórias juntas.</em></h1>
+    <p>Campanhas, projetos e ideias que aproximam marcas, conteúdo e comunidade de forma autêntica.</p>
+  </div>
 </section>
-<section class="section">
-<div class="container collaboration-grid">
-<div>
-<span class="eyebrow">CONVERSE COM A EQUIPE</span>
-<h2>Sua ideia pode<br>começar aqui<span>.</span>
-</h2>
-<p class="section-intro">Conte um pouco sobre sua marca, o projeto e o que você imagina para essa parceria. A equipe da Rose acompanha as propostas e orienta os próximos passos.</p>
-<div class="collaboration-topics">
-<span>Parcerias</span>
-<span>Campanhas</span>
-<span>Publicidade</span>
-</div>
-</div>
-<aside class="form-card contact-card">
-<span class="channel-icon">{% include 'core/includes/icon.html' with name='community' %}</span>
-<h2>Apresente seu projeto.</h2>
-<p>Inclua a marca, o objetivo da proposta e o período desejado. Isso ajuda a equipe a entender sua ideia.</p>{% if site.partnership_whatsapp %}<a class="btn btn-primary full" href="https://wa.me/{{ site.partnership_whatsapp }}?text=Olá%20Rose,%20quero%20falar%20sobre%20uma%20parceria." target="_blank" rel="noopener noreferrer">Falar sobre parceria</a>{% elif site.whatsapp %}<a class="btn btn-primary full" href="https://wa.me/{{ site.whatsapp }}?text=Olá%20Rose,%20quero%20falar%20sobre%20uma%20parceria." target="_blank" rel="noopener noreferrer">Falar com a equipe</a>{% else %}<p class="contact-unavailable">O contato para propostas ainda não está disponível. Acompanhe os canais oficiais da Rose.</p>{% endif %}<p class="form-note">A realização de uma parceria depende da análise e confirmação da equipe.</p>
-</aside>
-</div>
-</section>{% endblock %}
+<section class="rf-section rf-intro-section">
+  <div class="container rf-collab-layout">
+    <div data-reveal>
+      <span class="rf-kicker">VAMOS CONSTRUIR</span>
+      <h2>Sua ideia pode começar <em>aqui.</em></h2>
+      <p>Conte sobre sua marca, objetivo, campanha e período desejado. A equipe da Rose acompanha as propostas e organiza os próximos passos.</p>
+      <div class="rf-chip-row"><span>Campanhas</span><span>Publicidade</span><span>Conteúdo</span><span>Eventos</span></div>
+    </div>
+    <aside class="rf-contact-panel spotlight-card" data-reveal>
+      <span class="rf-kicker">FALE COM A EQUIPE</span>
+      <h3>Apresente seu projeto.</h3>
+      <p>Uma boa proposta começa com contexto. Envie as principais informações e a equipe continua a conversa com você.</p>
+      {% if site.partnership_whatsapp %}
+      <a class="rf-btn rf-btn-primary" href="https://wa.me/{{ site.partnership_whatsapp }}?text=Olá%20Rose,%20quero%20falar%20sobre%20uma%20parceria." target="_blank" rel="noopener noreferrer">Falar sobre parceria ↗</a>
+      {% elif site.whatsapp %}
+      <a class="rf-btn rf-btn-primary" href="https://wa.me/{{ site.whatsapp }}?text=Olá%20Rose,%20quero%20falar%20sobre%20uma%20parceria." target="_blank" rel="noopener noreferrer">Falar sobre parceria ↗</a>
+      {% endif %}
+    </aside>
+  </div>
+</section>
+{% endblock %}
