@@ -1,35 +1,42 @@
 {% extends "base.html" %}
 {% block title %}Solicitar {{ product.title }} • Rose Freitas{% endblock %}
-{% block description %}Envie sua solicitação de participação no {{ product.title }} de Rose Freitas.{% endblock %}
 {% block extra_head %}<meta name="robots" content="noindex, nofollow">{% endblock %}
-{% block content %}<section class="section">
-<div class="container application-grid">
-<aside class="application-intro">
-<a class="text-link" href="{% url 'vip' %}">Voltar aos canais VIP</a>
-<span class="eyebrow">{{ product.get_vip_channel_display|default:'COMUNIDADE VIP' }}</span>
-<h1>O começo de<br>uma nova conexão<span>.</span>
-</h1>
-<h2>{{ product.title }}</h2>
-<p>{{ product.description }}</p>{% if product.price > 0 %}<div class="application-price">
-<span>Investimento</span>
-<strong>R$ {{ product.price|floatformat:2 }}</strong>
-</div>{% endif %}<ol class="step-list">
-<li class="active">
-<span>1</span> Seus dados</li>
-<li>
-<span>2</span> Orientações de acesso</li>
-<li>
-<span>3</span> Confirmação da equipe</li>
-</ol>
-</aside>
-<div class="form-card">
-<span class="eyebrow">PASSO 1 DE 3</span>
-<h2>Vamos nos conhecer.</h2>
-<p>Preencha seus dados para solicitar a participação. A equipe acompanhará seu pedido e a liberação do acesso.</p>
-<form method="post">{% csrf_token %}{% if form.errors %}<div class="form-error-summary" role="alert">Revise os campos abaixo para continuar.</div>{% endif %}{{ form.non_field_errors }}{% for field in form %}<div class="field">
-<label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}{{ field.errors }}</div>{% endfor %}<button class="btn btn-primary full" type="submit">Enviar solicitação</button>
-<p class="form-note">Seus dados serão usados para acompanhar esta solicitação e entrar em contato sobre o acesso.</p>
-</form>
-</div>
-</div>
-</section>{% endblock %}
+{% block content %}
+<section class="rf-auth-section">
+  <div class="container rf-auth-layout">
+    <aside class="rf-auth-story" data-reveal>
+      <a class="rf-back-link" href="{% url 'vip' %}">← Voltar ao VIP</a>
+      <span class="rf-kicker">{{ product.get_vip_channel_display|default:'COMUNIDADE VIP' }}</span>
+      <h1>Seu acesso começa com <em>uma conexão.</em></h1>
+      <h2>{{ product.title }}</h2>
+      <p>{{ product.description }}</p>
+      {% if product.price > 0 %}<div class="rf-auth-price"><span>Investimento</span><strong>R$ {{ product.price|floatformat:2 }}</strong></div>{% endif %}
+      <div class="rf-stepper">
+        <div class="active"><span>01</span><strong>Seus dados</strong></div>
+        <div><span>02</span><strong>Orientações</strong></div>
+        <div><span>03</span><strong>Confirmação</strong></div>
+      </div>
+    </aside>
+
+    <div class="rf-auth-card" data-reveal>
+      <span class="rf-kicker">PASSO 1 DE 3</span>
+      <h2>Vamos começar.</h2>
+      <p>Preencha seus dados para que a equipe acompanhe sua solicitação.</p>
+      <form method="post" class="rf-form">{% csrf_token %}
+        {% if form.errors %}<div class="form-error-summary" role="alert">Revise os campos abaixo para continuar.</div>{% endif %}
+        {{ form.non_field_errors }}
+        {% for field in form %}
+        <div class="rf-field">
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}
+          {{ field.errors }}
+        </div>
+        {% endfor %}
+        <button class="rf-btn rf-btn-primary rf-full" type="submit">Enviar solicitação ↗</button>
+        <small class="rf-form-note">Seus dados serão usados apenas para acompanhar esta solicitação e orientar o acesso.</small>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}
