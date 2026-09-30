@@ -1,6 +1,6 @@
 <article class="course-card" data-catalog-card data-title="{{ p.title|lower }}" data-kind="{{ p.kind }}">
-  <a class="course-cover{% if not p.cover_url %} course-typographic{% endif %}" href="{% url 'product_detail' p.slug %}" tabindex="-1" aria-hidden="true">
-    {% if p.cover_url %}<img src="{{ p.cover_url }}" alt="" loading="lazy" decoding="async" width="640" height="440">{% else %}<span class="cover-brand">ROSE FREITAS</span>
+  <a class="course-cover{% if not p.image_url %} course-typographic{% endif %}" href="{% url 'product_detail' p.slug %}" tabindex="-1" aria-hidden="true">
+    {% if p.image_url %}<img src="{{ p.image_url }}" alt="" loading="lazy" decoding="async" width="640" height="440">{% else %}<span class="cover-brand">ROSE FREITAS</span>
 <span class="cover-title">{{ p.title }}</span>
 <span class="cover-bottom">{{ p.get_kind_display }} <span>RF.</span>
 </span>{% endif %}

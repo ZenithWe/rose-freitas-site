@@ -65,7 +65,7 @@ O `DATABASE_URL` é configurado no serviço existente; o Blueprint não cria um 
 
 ## Compatibilidade e validação do backend
 
-O redesign mantém Django, os modelos existentes, o login administrativo, os dados cadastrados e as variáveis de ambiente da implantação. Não adiciona migrações nem altera o esquema do banco. O app `core` continua usando o fluxo existente de `migrate --run-syncdb`. Os registros iniciais usam `get_or_create`: valores já editados pela administração não são sobrescritos.
+O redesign mantém Django, os modelos existentes, o login administrativo, os dados cadastrados e as variáveis de ambiente da implantação. O upload de capas acrescenta somente a tabela `core_productimage`, vinculada a `core_product`; nenhuma coluna ou tabela existente é alterada. Não são adicionadas migrações iniciais ao app que já está em produção sem migrações. O app `core` continua usando o fluxo existente de `migrate --run-syncdb`, que cria a nova tabela quando ainda não existe. Os registros iniciais usam `get_or_create`: valores já editados pela administração não são sobrescritos.
 
 O requisito Django foi atualizado de `5.2.6` para `5.2.17`, mantendo a série LTS 5.2 e incorporando as correções de segurança da série. Reinstale `requirements.txt` antes de executar as verificações.
 
@@ -86,6 +86,18 @@ python manage.py collectstatic --noinput
 ```
 
 Os testes usam um banco SQLite temporário, e-mail em memória e cache isolado. Cobrem publicação, links existentes, privacidade VIP, códigos, permissões, CSRF, cadastros, datas, finanças e preservação do histórico. Eles não comprovam entrega real de SMTP nem execução de pagamentos externos; esses pontos dependem das credenciais e dos serviços da implantação. Configure e verifique o envio real de e-mail antes de usar a área do cliente em produção: o backend de console é somente para desenvolvimento.
+
+## Fotos de cursos, produtos, VIP e assinaturas
+
+O formulário de produto no painel e na administração aceita uma foto JPEG, PNG ou WebP de até 5 MB e 20 milhões de pixels. A foto é validada pelo conteúdo real, ajustada para até 1.600 pixels no maior lado e regravada como WebP de no máximo 600 KiB, removendo metadados como localização e EXIF. SVG, animações e arquivos inválidos são recusados. O processamento usa [Pillow 12.3.0](https://pillow.readthedocs.io/en/stable/releasenotes/12.3.0.html).
+
+As fotos são armazenadas na nova tabela do PostgreSQL/SQLite, dentro do banco existente. Nenhum disco persistente, bucket, serviço pago ou nova credencial é necessário, e as fotos não desaparecem ao reiniciar o serviço com sistema de arquivos temporário. O limite de 600 KiB por foto controla o uso do banco; a capacidade e os backups continuam sendo os do banco da operação.
+
+Enviar uma foto não altera o preço, o checkout, o conteúdo ou o endereço `cover_url` já cadastrado. Sem foto enviada, a capa continua usando esse endereço. Trocar a foto muda a versão do seu endereço interno; remover a foto volta a usar `cover_url`. A escolha “Assinatura” está disponível no tipo de conteúdo, mantendo os links de pagamento cadastrados e sem criar cobrança recorrente automática.
+
+Capas de produtos ativos são públicas, com tipo de imagem fixo, `nosniff` e validação de cache por ETag. Capas de produtos desativados só são servidas à equipe autenticada ou ao cliente verificado que ainda tem acesso ativo ao produto, com cache privado e `no-store`. As listagens buscam somente os metadados das fotos, sem trazer os arquivos binários para cada cartão.
+
+Depois de instalar os requisitos, execute `python manage.py migrate --run-syncdb` antes de reiniciar uma cópia existente do projeto. O comando de inicialização do Render já inclui essa etapa. Testes adicionais cobrem upload, troca, remoção, campos comerciais preservados, privacidade, metadados, limites, formatos inválidos, administração nativa e assinaturas.
 
 ## Segurança
 

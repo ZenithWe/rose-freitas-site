@@ -1,8 +1,8 @@
 {% extends "base.html" %}
-{% block title %}Cursos e produtos • Rose Freitas{% endblock %}
-{% block description %}Explore os cursos e produtos de Rose Freitas. Conheça os conteúdos, aulas, bônus e condições de cada programa.{% endblock %}
-{% block og_title %}Cursos e produtos • Rose Freitas{% endblock %}
-{% block twitter_title %}Cursos e produtos • Rose Freitas{% endblock %}
+{% block title %}Cursos, produtos e assinaturas • Rose Freitas{% endblock %}
+{% block description %}Explore os cursos, produtos e assinaturas de Rose Freitas. Conheça os conteúdos, aulas, bônus e condições de cada programa.{% endblock %}
+{% block og_title %}Cursos, produtos e assinaturas • Rose Freitas{% endblock %}
+{% block twitter_title %}Cursos, produtos e assinaturas • Rose Freitas{% endblock %}
 {% block og_description %}Explore os cursos, aulas e produtos de Rose Freitas, no seu ritmo.{% endblock %}
 {% block twitter_description %}Explore os cursos, aulas e produtos de Rose Freitas, no seu ritmo.{% endblock %}
 {% block content %}<section class="page-hero">
@@ -13,16 +13,17 @@
 <p>Escolha seu próximo passo. Explore os conteúdos e encontre o que faz sentido para o seu momento.</p>
 </div>
 </section>
-<section class="section catalog-section">
+<section class="section catalog-section paper-section">
 <div class="container" data-catalog>
 <div class="catalog-toolbar">
 <div class="filter-group" role="group" aria-label="Filtrar conteúdos">
 <button type="button" data-filter="all" aria-pressed="true">Todos</button>
 <button type="button" data-filter="course" aria-pressed="false">Cursos</button>
 <button type="button" data-filter="product" aria-pressed="false">Produtos</button>
+<button type="button" data-filter="subscription" aria-pressed="false">Assinaturas</button>
 </div>
 <div class="catalog-search">
-<label for="catalog-search" class="sr-only">Buscar cursos e produtos</label>
+<label for="catalog-search" class="sr-only">Buscar cursos, produtos e assinaturas</label>
 <input id="catalog-search" type="search" placeholder="Buscar um conteúdo" autocomplete="off">
 </div>
 </div>

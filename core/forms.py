@@ -5,7 +5,9 @@ from django import forms
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
 from django.utils.text import slugify
-from .models import Product,VipRequest,Banner,AgendaItem,Expense,SiteSettings,Order,CustomerAccess
+from django.db import transaction
+from .models import Product,ProductImage,VipRequest,Banner,AgendaItem,Expense,SiteSettings,Order,CustomerAccess
+from .images import normalize_upload
 
 class StyledModelForm(forms.ModelForm):
     def __init__(self,*args,**kwargs):
@@ -28,11 +30,44 @@ class StyledModelForm(forms.ModelForm):
         return self.cleaned_data["email"].strip().lower()
 
 class ProductForm(StyledModelForm):
+    cover_upload = forms.FileField(required=False,label="Foto do conteúdo",
+        help_text="Envie uma foto JPEG, PNG ou WebP de até 5 MB. Ela será ajustada automaticamente para a capa.",
+        widget=forms.FileInput(attrs={"accept":"image/jpeg,image/png,image/webp", "data-cover-upload":""}))
+    remove_cover = forms.BooleanField(required=False,label="Remover foto enviada",
+        help_text="Ao remover a foto, o link de capa cadastrado volta a ser usado, quando disponível.")
+
     class Meta:
         model=Product
-        fields=["kind","title","slug","description","price","lessons","bonus","cover_url","checkout_url","vip_channel","featured","active"]
+        fields=["kind","title","slug","description","price","lessons","bonus","cover_upload","remove_cover","cover_url","checkout_url","vip_channel","featured","active"]
         labels={"kind":"Tipo", "title":"Título", "slug":"Endereço do produto", "description":"Descrição", "price":"Preço (R$)", "lessons":"Quantidade de aulas", "bonus":"Bônus", "cover_url":"URL da capa", "checkout_url":"Link de compra", "vip_channel":"Canal VIP", "featured":"Destaque", "active":"Ativo"}
         help_texts={"slug":"Pode ficar em branco: será criado a partir do título.", "checkout_url":"Use o endereço completo da página de pagamento existente."}
+
+    def clean_cover_upload(self):
+        upload = self.cleaned_data.get("cover_upload")
+        self._cover_payload = normalize_upload(upload) if upload else None
+        return upload
+
+    def clean(self):
+        data = super().clean()
+        if data.get("cover_upload") and data.get("remove_cover"):
+            self.add_error("remove_cover", "Para trocar a foto, envie a nova imagem sem marcar a opção de remover.")
+        return data
+
+    def save(self, commit=True):
+        if commit:
+            with transaction.atomic():
+                return super().save(commit=True)
+        return super().save(commit=False)
+
+    def _save_m2m(self):
+        super()._save_m2m()
+        payload = getattr(self, "_cover_payload", None)
+        if payload:
+            image, _ = ProductImage.objects.update_or_create(product=self.instance, defaults=payload.model_values())
+            self.instance._state.fields_cache["uploaded_cover"] = image
+        elif self.cleaned_data.get("remove_cover"):
+            ProductImage.objects.filter(product=self.instance).delete()
+            self.instance._state.fields_cache["uploaded_cover"] = None
 
     def clean_slug(self):
         slug = self.cleaned_data.get("slug") or slugify(self.cleaned_data.get("title", ""))[:180]

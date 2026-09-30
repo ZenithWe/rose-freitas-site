@@ -1,0 +1,38 @@
+{% extends "panel/base.html" %}
+{% block title %}Materiais • Rose Freitas{% endblock %}
+{% block eyebrow %}Sua biblioteca de conteúdo{% endblock %}
+{% block heading %}Materiais{% endblock %}
+{% block description %}Organize aulas, vídeos e conteúdos extras dos seus cursos e produtos.{% endblock %}
+{% block page_action %}<a class="panel-button panel-button-primary" href="{% url 'panel_material_new' %}{% if filter_query %}?{{ filter_query }}{% endif %}">{% include "panel/icon.html" with icon="plus" %}Novo material</a>{% endblock %}
+{% block panel_content %}
+<section class="panel-metrics panel-metrics-three panel-material-metrics" aria-label="Resumo de todos os materiais cadastrados">
+  <article class="panel-metric panel-metric-featured"><div class="panel-metric-label"><span>Materiais cadastrados</span>{% include "panel/icon.html" with icon="book" %}</div><strong>{{ total_materials }}</strong><small>Conteúdos em toda a sua biblioteca</small></article>
+  <article class="panel-metric"><div class="panel-metric-label"><span>Disponíveis para clientes</span>{% include "panel/icon.html" with icon="check" %}</div><strong>{{ active_materials }}</strong><small>Materiais marcados como ativos</small></article>
+  <article class="panel-metric"><div class="panel-metric-label"><span>Produtos com materiais</span>{% include "panel/icon.html" with icon="grid" %}</div><strong>{{ linked_products }}</strong><small>Cursos, VIPs e produtos vinculados</small></article>
+</section>
+<section class="panel-surface panel-list-surface" data-panel-list>
+  <div class="panel-surface-heading"><div><p class="panel-eyebrow">Conteúdo que acompanha a jornada</p><h2>Sua biblioteca</h2><p>Escolha um produto ou encontre um material pelo nome.</p></div></div>
+  <form class="panel-material-filters" method="get" action="{% url 'panel_materials' %}">
+    <div class="panel-field"><label for="material-product-filter">Curso ou produto</label><select class="form-control" name="produto" id="material-product-filter"><option value="">Todos os cursos e produtos</option>{% for product in products %}<option value="{{ product.pk }}" {% if product_filter == product.pk|stringformat:'s' %}selected{% endif %}>{{ product.title }}</option>{% endfor %}</select></div>
+    <div class="panel-field"><label for="material-status-filter">Situação</label><select class="form-control" name="situacao" id="material-status-filter"><option value="">Todas as situações</option><option value="active" {% if status_filter == 'active' %}selected{% endif %}>Ativos</option><option value="hidden" {% if status_filter == 'hidden' %}selected{% endif %}>Ocultos</option></select></div>
+    <button class="panel-button panel-button-secondary" type="submit">Filtrar</button>{% if filter_query %}<a class="panel-text-link panel-material-reset" href="{% url 'panel_materials' %}">Limpar filtros</a>{% endif %}
+  </form>
+  {% if items %}
+  {% include "panel/table_tools.html" with search_label="Buscar material, produto ou link" %}
+  <div class="panel-table-wrap"><table class="panel-table panel-material-table"><caption class="panel-sr-only">Materiais por produto e ordem de exibição</caption><thead><tr><th scope="col">Material</th><th scope="col">Curso ou produto</th><th scope="col">Ordem</th><th scope="col">Situação</th><th scope="col">Ações</th></tr></thead><tbody>
+    {% for i in items %}
+    <tr data-record data-search="{{ i.title }} {{ i.product.title }} {{ i.url }} {% if i.active %}ativo disponível{% else %}oculto inativo{% endif %}">
+      <td data-label="Material"><div class="panel-material-name"><span class="panel-material-symbol">{% include "panel/icon.html" with icon="book" %}</span><div><strong>{{ i.title }}</strong><small class="panel-break">{{ i.source_host }}</small></div></div></td>
+      <td data-label="Curso ou produto"><strong>{{ i.product.title }}</strong><small>{{ i.product.get_kind_display }}{% if not i.product.active %} · Produto inativo{% endif %}</small></td>
+      <td data-label="Ordem"><span class="panel-order-number">{{ i.position }}</span></td>
+      <td data-label="Situação">{% if i.active %}<span class="panel-status confirmed">Ativo</span>{% else %}<span class="panel-status cancelled">Oculto</span>{% endif %}</td>
+      <td data-label="Ações"><div class="panel-row-actions panel-material-actions"><a class="panel-row-link" href="{% url 'panel_material_edit' i.pk %}{% if filter_query %}?{{ filter_query }}{% endif %}" aria-label="Editar {{ i.title }}">Editar</a>{% if i.has_safe_link %}<a class="panel-row-link panel-material-open" href="{{ i.url }}" target="_blank" rel="noopener" aria-label="Abrir {{ i.title }} em nova aba">Abrir{% include "panel/icon.html" with icon="external" %}</a>{% endif %}<form method="post" action="{% url 'panel_material_delete' i.pk %}{% if filter_query %}?{{ filter_query }}{% endif %}" data-confirm="Excluir este material? Ele deixará de aparecer na área do cliente.">{% csrf_token %}<button class="panel-row-link panel-action-danger" type="submit" aria-label="Excluir {{ i.title }}">Excluir</button></form></div></td>
+    </tr>
+    {% endfor %}
+  </tbody></table></div>
+  {% include "panel/no_results.html" %}
+  {% elif filter_query %}<div class="panel-empty"><span class="panel-empty-icon">{% include "panel/icon.html" with icon="search" %}</span><h3>Nenhum material com estes filtros.</h3><p>Escolha outro produto ou veja todos os conteúdos da biblioteca.</p><a class="panel-button panel-button-secondary" href="{% url 'panel_materials' %}">Ver todos os materiais</a></div>
+  {% else %}<div class="panel-empty"><span class="panel-empty-icon">{% include "panel/icon.html" with icon="book" %}</span><h3>O próximo conteúdo começa aqui.</h3><p>Vincule o link de uma aula, vídeo ou PDF a um produto para disponibilizá-lo na área do cliente.</p>{% if products %}<a class="panel-button panel-button-primary" href="{% url 'panel_material_new' %}">{% include "panel/icon.html" with icon="plus" %}Criar primeiro material</a>{% else %}<a class="panel-button panel-button-primary" href="{% url 'panel_product_new' %}">{% include "panel/icon.html" with icon="plus" %}Cadastrar um produto</a>{% endif %}</div>{% endif %}
+</section>
+<p class="panel-footnote">{% include "panel/icon.html" with icon="info" %}Os materiais ativos aparecem na área do cliente para quem tem acesso ao produto. A ordem de exibição é definida dentro de cada curso ou produto.</p>
+{% endblock %}

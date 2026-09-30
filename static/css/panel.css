@@ -1,13 +1,13 @@
 /* Rose Freitas management workspace. All styling is isolated from the public site. */
 .panel-body {
-  --panel-ink: #0b0c0d;
-  --panel-bg: #121416;
-  --panel-surface: #1a1d20;
-  --panel-field: #141619;
-  --panel-line: #30343a;
+  --panel-ink: #100d0b;
+  --panel-bg: #16120f;
+  --panel-surface: #221d18;
+  --panel-field: #181410;
+  --panel-line: #443a31;
   --panel-gold: #d6b36b;
-  --panel-ivory: #f4f0e7;
-  --panel-muted: #a4a7ad;
+  --panel-ivory: #f6efe5;
+  --panel-muted: #b9ada0;
   --panel-green: #98d3b0;
   --panel-red: #efa6a6;
   margin: 0;
@@ -148,6 +148,24 @@
 .panel-order-number { display: inline-grid; place-items: center; width: 28px; height: 28px; border: 1px solid #424342; border-radius: 4px; font-variant-numeric: tabular-nums; }
 .panel-channel { display: inline-flex; align-items: center; gap: 6px; }
 .panel-channel > .panel-icon { width: 12px; height: 12px; color: #c3aa72; }
+.panel-material-metrics .panel-metric { min-height: 140px; }
+.panel-material-filters { display: flex; align-items: flex-end; flex-wrap: wrap; gap: 16px; padding-bottom: 24px; margin-bottom: 22px; border-bottom: 1px solid var(--panel-line); }
+.panel-material-filters .panel-field:first-child { flex: 1 1 280px; }
+.panel-material-filters .panel-field:nth-child(2) { flex: 0 1 190px; }
+.panel-material-filters .panel-field > label { display: block; margin-bottom: 8px; }
+.panel-material-filters .panel-button { min-height: 47px; }
+.panel-material-reset { min-height: 47px; }
+.panel-material-name { display: flex; align-items: center; gap: 12px; }
+.panel-material-name > div { min-width: 0; }
+.panel-material-symbol { display: inline-grid; place-items: center; flex: 0 0 34px; width: 34px; height: 40px; border: 1px solid #7b644230; border-radius: 5px; background: #d6b36b0b; color: var(--panel-gold); }
+.panel-material-symbol .panel-icon { width: 16px; height: 16px; }
+.panel-body .panel-material-table th:first-child { width: 30%; }
+.panel-body .panel-material-table th:nth-child(2) { width: 25%; }
+.panel-body .panel-material-table th:nth-child(3) { width: 9%; }
+.panel-body .panel-material-table th:nth-child(4) { width: 13%; }
+.panel-body .panel-material-table th:last-child { width: 23%; }
+.panel-material-actions { gap: 6px 13px; }
+.panel-body .panel-material-open { color: #d2c5ab; }
 .panel-activity { display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; align-items: center; gap: 11px; padding: 15px 0; border-bottom: 1px solid var(--panel-line); }
 .panel-activity:last-child { border-bottom: 0; }
 .panel-activity:first-child { padding-top: 3px; }
@@ -308,6 +326,10 @@
   .panel-login-editorial h1 { font-size: 48px; }
 }
 @media (max-width: 760px) {
+  .panel-material-filters { gap: 14px; }
+  .panel-material-filters .panel-field:first-child { flex-basis: 100%; }
+  .panel-material-filters .panel-field:nth-child(2) { flex: 1 1 150px; }
+  .panel-material-actions { align-items: flex-start; flex-wrap: wrap; gap: 5px 13px; }
   .panel-topbar { min-height: 66px; padding: 10px 20px; }
   .panel-content { padding: 26px 20px 30px; }
   .panel-topbar-label { font-size: 7px; letter-spacing: .09em; }
@@ -357,6 +379,8 @@
   .panel-login-art { top: -160px; right: -560px; }
 }
 @media (max-width: 480px) {
+  .panel-material-filters .panel-field:nth-child(2) { flex-basis: 100%; }
+  .panel-material-filters .panel-button { flex: 1; }
   .panel-topbar { padding-left: 13px; padding-right: 17px; }
   .panel-topbar-start { gap: 6px; }
   .panel-topbar-label { display: none; }

@@ -5,10 +5,10 @@
 {% block twitter_title %}{{ product.title }} • Rose Freitas{% endblock %}
 {% block og_description %}{{ product.description|truncatechars:160 }}{% endblock %}
 {% block twitter_description %}{{ product.description|truncatechars:160 }}{% endblock %}
-{% block twitter_card %}{% if product.cover_url %}summary_large_image{% else %}summary{% endif %}{% endblock %}
-{% block extra_head %}{% if product.cover_url %}<meta property="og:image" content="{{ product.cover_url }}">
+{% block twitter_card %}{% if product.image_url %}summary_large_image{% else %}summary{% endif %}{% endblock %}
+{% block extra_head %}{% if product.image_url %}<meta property="og:image" content="{{ image_absolute_url }}">
 <meta property="og:image:alt" content="{{ product.title }}">
-<meta name="twitter:image" content="{{ product.cover_url }}">{% endif %}{% endblock %}
+<meta name="twitter:image" content="{{ image_absolute_url }}">{% endif %}{% endblock %}
 {% block content %}<section class="product-hero">
 <div class="container">
 <nav class="breadcrumbs" aria-label="Localização">
@@ -24,13 +24,13 @@
 <h1>{{ product.title }}</h1>
 <div class="product-facts">{% if product.lessons %}<span>{% include 'core/includes/icon.html' with name='play' %} {{ product.lessons }} aulas</span>{% endif %}{% if product.bonus %}<span>{% include 'core/includes/icon.html' with name='book' %} {{ product.bonus }}</span>{% endif %}</div>
 </div>
-<div class="detail-cover">{% if product.cover_url %}<img src="{{ product.cover_url }}" alt="{{ product.title }}" width="640" height="440" fetchpriority="high">{% else %}<span class="eyebrow">CONTEÚDO AUTORAL</span>
+<div class="detail-cover">{% if product.image_url %}<img src="{{ product.image_url }}" alt="{{ product.title }}" width="640" height="440" fetchpriority="high">{% else %}<span class="eyebrow">CONTEÚDO AUTORAL</span>
 <span class="detail-monogram" aria-hidden="true">RF.</span>
 <span>ROSE FREITAS</span>{% endif %}</div>
 </div>
 </div>
 </section>
-<section class="section">
+<section class="section paper-section">
 <div class="container detail-grid">
 <div class="detail-content">
 <span class="eyebrow">SOBRE O CONTEÚDO</span>
@@ -45,7 +45,7 @@
 </div>{% endif %}</div>{% endif %}</div>
 <aside class="purchase-card" aria-label="Condições de acesso">
 <span class="eyebrow">SEU PRÓXIMO PASSO</span>
-<h2>{% if product.price > 0 %}R$ {{ product.price|floatformat:2 }}{% else %}Consulte as condições{% endif %}</h2>{% if product.checkout_url %}<a class="btn btn-primary full" href="{{ product.checkout_url }}" target="_blank" rel="noopener noreferrer">{% if product.kind == 'product' %}Comprar produto{% else %}Quero me inscrever{% endif %}<span class="sr-only">(abre em outra aba)</span>
+<h2>{% if product.price > 0 %}R$ {{ product.price|floatformat:2 }}{% else %}Consulte as condições{% endif %}</h2>{% if product.checkout_url %}<a class="btn btn-primary full" href="{{ product.checkout_url }}" target="_blank" rel="noopener noreferrer">{% if product.kind == 'product' %}Comprar produto{% elif product.kind == 'subscription' %}Conhecer assinatura{% else %}Quero me inscrever{% endif %}<span class="sr-only">(abre em outra aba)</span>
 </a>
 <p class="purchase-note">Você será direcionada à página de pagamento para conferir as condições e concluir sua compra.</p>{% if product.kind == 'vip' %}<a class="btn btn-outline full" href="{% url 'vip_request' product.slug %}">Registrar solicitação VIP</a>{% endif %}{% elif product.kind == 'vip' %}<a class="btn btn-primary full" href="{% url 'vip_request' product.slug %}">Solicitar participação</a>{% elif site.whatsapp %}<a class="btn btn-primary full" href="https://wa.me/{{ site.whatsapp }}?text=Olá,%20quero%20saber%20mais%20sobre%20{{ product.title|urlencode }}." target="_blank" rel="noopener noreferrer">Consultar a equipe</a>{% else %}<p class="purchase-note">As inscrições para este conteúdo ainda não estão disponíveis. Acompanhe as novidades da Rose.</p>{% endif %}<div class="purchase-divider">
 </div>
