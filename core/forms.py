@@ -90,6 +90,13 @@ class ProductForm(StyledModelForm):
             raise forms.ValidationError("Este endereço já pertence a outro produto. Escolha outro.")
         return slug
 
+class AffiliateCategoryForm(StyledModelForm):
+    class Meta:
+        model=AffiliateCategory
+        fields=["name","slug","position"]
+        labels={"name":"Nome da categoria","slug":"Endereço da categoria","position":"Ordem de exibição"}
+        help_texts={"slug":"Pode ficar em branco: será criado automaticamente a partir do nome.","position":"Use números menores para mostrar a categoria primeiro."}
+
 class VipRequestForm(StyledModelForm):
     class Meta:
         model=VipRequest
