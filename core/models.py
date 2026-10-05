@@ -69,6 +69,31 @@ class Product(models.Model):
             return reverse("product_image",kwargs={"pk":self.pk,"checksum":self.uploaded_cover.checksum})
         return self.cover_url
 
+class AffiliateCategory(models.Model):
+    name=models.CharField(max_length=120,unique=True)
+    slug=models.SlugField(max_length=130,unique=True,blank=True)
+    position=models.PositiveSmallIntegerField(default=0)
+    class Meta: ordering=["position","name","id"]
+    def save(self,*args,**kwargs):
+        if not self.slug:
+            base=slugify(self.name)[:120] or "categoria"
+            candidate=base
+            index=2
+            while AffiliateCategory.objects.exclude(pk=self.pk).filter(slug=candidate).exists():
+                candidate=f"{base[:110]}-{index}"
+                index+=1
+            self.slug=candidate
+        super().save(*args,**kwargs)
+    def __str__(self): return self.name
+
+class AffiliateProductCategory(models.Model):
+    product=models.OneToOneField(Product,on_delete=models.CASCADE,related_name="affiliate_assignment")
+    category=models.ForeignKey(AffiliateCategory,on_delete=models.PROTECT,related_name="product_assignments")
+    created_at=models.DateTimeField(auto_now_add=True)
+    updated_at=models.DateTimeField(auto_now=True)
+    class Meta: ordering=["category__position","category__name","product__title"]
+    def __str__(self): return f"{self.product} • {self.category}"
+
 class ProductImage(models.Model):
     product=models.OneToOneField(Product,on_delete=models.CASCADE,related_name="uploaded_cover")
     data=models.BinaryField(editable=False)
