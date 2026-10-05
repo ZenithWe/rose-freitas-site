@@ -1,0 +1,45 @@
+{% extends "panel/base.html" %}
+{% block title %}Categorias de afiliados • Rose Freitas{% endblock %}
+{% block eyebrow %}Organização dos afiliados{% endblock %}
+{% block heading %}Categorias de afiliados{% endblock %}
+{% block description %}Crie e organize as categorias usadas para separar os produtos afiliados no site.{% endblock %}
+{% block page_action %}<a class="panel-button panel-button-primary" href="{% url 'panel_affiliate_category_new' %}">{% include "panel/icon.html" with icon="plus" %}Nova categoria</a>{% endblock %}
+{% block panel_content %}
+<section class="panel-surface panel-list-surface" data-panel-list>
+  {% if items %}
+  {% include "panel/table_tools.html" with search_label="Buscar categoria" %}
+  <div class="panel-table-wrap">
+    <table class="panel-table">
+      <caption class="panel-sr-only">Categorias de produtos afiliados</caption>
+      <thead><tr><th scope="col">Categoria</th><th scope="col">Ordem</th><th scope="col">Produtos</th><th scope="col">Ações</th></tr></thead>
+      <tbody>
+        {% for i in items %}
+        <tr data-record data-search="{{ i.name }}">
+          <td data-label="Categoria"><strong>{{ i.name }}</strong><small style="display:block;opacity:.65">{{ i.slug }}</small></td>
+          <td data-label="Ordem">{{ i.position }}</td>
+          <td data-label="Produtos">{{ i.product_assignments.count }}</td>
+          <td data-label="Ações">
+            <div class="panel-row-actions">
+              <a class="panel-row-link" href="{% url 'panel_affiliate_category_edit' i.pk %}">Editar</a>
+              <form method="post" action="{% url 'panel_affiliate_category_delete' i.pk %}" data-confirm="Excluir esta categoria?">
+                {% csrf_token %}
+                <button class="panel-row-link panel-action-danger" type="submit">Excluir</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% include "panel/no_results.html" %}
+  {% else %}
+  <div class="panel-empty">
+    <span class="panel-empty-icon">{% include "panel/icon.html" with icon="grid" %}</span>
+    <h3>Crie sua primeira categoria.</h3>
+    <p>Use categorias para organizar os produtos afiliados na página pública.</p>
+    <a class="panel-button panel-button-primary" href="{% url 'panel_affiliate_category_new' %}">{% include "panel/icon.html" with icon="plus" %}Criar categoria</a>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}
