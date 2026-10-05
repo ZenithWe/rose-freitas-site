@@ -19,8 +19,8 @@ from django.conf import settings
 from django.urls import reverse
 from django.views.decorators.http import require_POST, require_safe
 from django.views.decorators.cache import never_cache
-from .models import SiteSettings,Banner,Product,Material,VipRequest,Order,CustomerAccess,CustomerLoginCode,AgendaItem,Expense
-from .forms import ProductForm,VipRequestForm,BannerForm,AgendaForm,ExpenseForm,SettingsForm,OrderForm,CustomerAccessForm
+from .models import SiteSettings,Banner,Product,AffiliateCategory,AffiliateProductCategory,Material,VipRequest,Order,CustomerAccess,CustomerLoginCode,AgendaItem,Expense
+from .forms import ProductForm,VipRequestForm,BannerForm,AgendaForm,ExpenseForm,SettingsForm,OrderForm,CustomerAccessForm,AffiliateCategoryForm
 from .images import product_image
 
 def site_settings():
@@ -28,6 +28,17 @@ def site_settings():
 
 def product_queryset():
     return Product.objects.select_related("uploaded_cover").defer("uploaded_cover__data")
+
+DEFAULT_AFFILIATE_CATEGORIES=[
+    ("beleza-estetica","Beleza/Estética",10),
+    ("bts","BTS",20),
+    ("eletro-eletronico","Eletro/Eletrônico",30),
+    ("moda","Moda",40),
+]
+
+def ensure_default_affiliate_categories():
+    for slug,name,position in DEFAULT_AFFILIATE_CATEGORIES:
+        AffiliateCategory.objects.get_or_create(slug=slug,defaults={"name":name,"position":position})
 
 def home(request):
     return render(request,"core/home.html",{
@@ -53,10 +64,13 @@ def vip(request):
     })
 
 def affiliates(request):
+    ensure_default_affiliate_categories()
+    assignment_qs=AffiliateProductCategory.objects.select_related("product","product__uploaded_cover").defer("product__uploaded_cover__data").filter(product__active=True).order_by("-product__featured","product__title")
+    categories=AffiliateCategory.objects.prefetch_related(Prefetch("product_assignments",queryset=assignment_qs,to_attr="visible_assignments"))
+    visible_categories=[category for category in categories if category.visible_assignments]
     return render(request,"core/affiliates.html",{
         "site":site_settings(),
-        "courses":product_queryset().filter(active=True,kind="course"),
-        "products":product_queryset().filter(active=True,kind__in=["product","subscription"]),
+        "categories":visible_categories,
     })
 
 def partnerships(request):
@@ -194,14 +208,23 @@ def dashboard(request):
 
 @staff_member_required(login_url="/painel/entrar/")
 def products(request):
-    return render(request,"panel/products.html",{"items":product_queryset()})
+    ensure_default_affiliate_categories()
+    return render(request,"panel/products.html",{"items":product_queryset().select_related("affiliate_assignment__category")})
 
 @staff_member_required(login_url="/painel/entrar/")
 def product_form(request,pk=None):
+    ensure_default_affiliate_categories()
     obj=get_object_or_404(product_queryset(),pk=pk) if pk else None
     form=ProductForm(request.POST or None,request.FILES or None,instance=obj)
     if request.method=="POST" and form.is_valid():
-        form.save(); messages.success(request,"Produto salvo."); return redirect("panel_products")
+        product=form.save()
+        category=form.cleaned_data.get("category")
+        if category:
+            AffiliateProductCategory.objects.update_or_create(product=product,defaults={"category":category})
+        else:
+            AffiliateProductCategory.objects.filter(product=product).delete()
+        messages.success(request,"Produto salvo.")
+        return redirect("panel_products")
     return render(request,"panel/form.html",{"form":form,"title":"Editar produto" if obj else "Novo produto"})
 
 @staff_member_required(login_url="/painel/entrar/")
@@ -221,6 +244,33 @@ def product_delete(request,pk):
             product.save(update_fields=["active","updated_at"])
             messages.success(request,"Produto desativado para preservar o histórico de pedidos.")
     return redirect("panel_products")
+
+@staff_member_required(login_url="/painel/entrar/")
+def affiliate_categories(request):
+    ensure_default_affiliate_categories()
+    return render(request,"panel/affiliate_categories.html",{"items":AffiliateCategory.objects.all()})
+
+@staff_member_required(login_url="/painel/entrar/")
+def affiliate_category_form(request,pk=None):
+    ensure_default_affiliate_categories()
+    obj=get_object_or_404(AffiliateCategory,pk=pk) if pk else None
+    form=AffiliateCategoryForm(request.POST or None,instance=obj)
+    if request.method=="POST" and form.is_valid():
+        form.save()
+        messages.success(request,"Categoria salva.")
+        return redirect("panel_affiliate_categories")
+    return render(request,"panel/form.html",{"form":form,"title":"Editar categoria" if obj else "Nova categoria"})
+
+@staff_member_required(login_url="/painel/entrar/")
+@require_POST
+def affiliate_category_delete(request,pk):
+    category=get_object_or_404(AffiliateCategory,pk=pk)
+    try:
+        category.delete()
+        messages.success(request,"Categoria excluída.")
+    except ProtectedError:
+        messages.error(request,"Esta categoria está sendo usada por produtos. Troque a categoria desses produtos antes de excluí-la.")
+    return redirect("panel_affiliate_categories")
 
 @staff_member_required(login_url="/painel/entrar/")
 def vip_requests(request):
