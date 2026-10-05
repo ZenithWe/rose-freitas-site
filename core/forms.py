@@ -6,7 +6,7 @@ from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
 from django.utils.text import slugify
 from django.db import transaction
-from .models import Product,ProductImage,VipRequest,Banner,AgendaItem,Expense,SiteSettings,Order,CustomerAccess
+from .models import Product,ProductImage,AffiliateCategory,VipRequest,Banner,AgendaItem,Expense,SiteSettings,Order,CustomerAccess
 from .images import normalize_upload
 
 class StyledModelForm(forms.ModelForm):
@@ -30,6 +30,7 @@ class StyledModelForm(forms.ModelForm):
         return self.cleaned_data["email"].strip().lower()
 
 class ProductForm(StyledModelForm):
+    category = forms.ModelChoiceField(queryset=AffiliateCategory.objects.none(),required=False,label="Categoria de afiliado",help_text="Selecione uma categoria para exibir este item na página de Produtos Afiliados.")
     cover_upload = forms.FileField(required=False,label="Foto do conteúdo",
         help_text="Envie uma foto JPEG, PNG ou WebP de até 5 MB. Ela será ajustada automaticamente para a capa.",
         widget=forms.FileInput(attrs={"accept":"image/jpeg,image/png,image/webp", "data-cover-upload":""}))
@@ -38,9 +39,18 @@ class ProductForm(StyledModelForm):
 
     class Meta:
         model=Product
-        fields=["kind","title","slug","description","price","lessons","bonus","cover_upload","remove_cover","cover_url","checkout_url","vip_channel","featured","active"]
+        fields=["kind","category","title","slug","description","price","lessons","bonus","cover_upload","remove_cover","cover_url","checkout_url","vip_channel","featured","active"]
         labels={"kind":"Tipo", "title":"Título", "slug":"Endereço do produto", "description":"Descrição", "price":"Preço (R$)", "lessons":"Quantidade de aulas", "bonus":"Bônus", "cover_url":"URL da capa", "checkout_url":"Link de compra", "vip_channel":"Canal VIP", "featured":"Destaque", "active":"Ativo"}
         help_texts={"slug":"Pode ficar em branco: será criado a partir do título.", "checkout_url":"Use o endereço completo da página de pagamento existente."}
+
+    def __init__(self,*args,**kwargs):
+        super().__init__(*args,**kwargs)
+        self.fields["category"].queryset=AffiliateCategory.objects.all().order_by("position","name")
+        if self.instance and self.instance.pk:
+            try:
+                self.fields["category"].initial=self.instance.affiliate_assignment.category_id
+            except Exception:
+                pass
 
     def clean_cover_upload(self):
         upload = self.cleaned_data.get("cover_upload")
