@@ -1,31 +1,47 @@
 {% extends "base.html" %}
-{% block title %}Afiliados • Rose Freitas{% endblock %}
+{% block title %}Produtos afiliados • Rose Freitas{% endblock %}
 {% block content %}
 <section class="rf-page-hero rf-page-teal">
   <div class="container rf-page-hero-inner">
-    <span class="rf-kicker">AFILIADOS</span>
-    <h1>Conteúdo que faz sentido <em>merece circular.</em></h1>
-    <p>Conheça os conteúdos da Rose e converse com a equipe sobre possibilidades de divulgação e afiliação.</p>
+    <span class="rf-kicker">PRODUTOS AFILIADOS</span>
+    <h1>Escolhas da Rose, <em>organizadas por categoria.</em></h1>
+    <p>Encontre produtos indicados e acesse cada recomendação pela categoria que você procura.</p>
   </div>
 </section>
-<section class="rf-section rf-intro-section">
-  <div class="container rf-collab-layout">
-    <div data-reveal>
-      <span class="rf-kicker">UMA CONVERSA PARA COMEÇAR</span>
-      <h2>Transforme alcance em <em>conexão.</em></h2>
-      <p>Explore os cursos e produtos, escolha o que combina com sua audiência e fale com a equipe para entender as condições.</p>
-      <a class="rf-btn rf-btn-dark" href="{% url 'catalog' %}">Conhecer conteúdos ↗</a>
+
+<section class="rf-section rf-courses-section">
+  <div class="container">
+    {% if categories %}
+    <div class="rf-catalog-toolbar">
+      <div class="filter-group" role="navigation" aria-label="Categorias de produtos afiliados">
+        {% for category in categories %}
+        <a href="#{{ category.slug }}">{{ category.name }}</a>
+        {% endfor %}
+      </div>
     </div>
-    <aside class="rf-contact-panel spotlight-card" data-reveal>
-      <span class="rf-kicker">QUERO DIVULGAR</span>
-      <h3>Interesse em afiliação?</h3>
-      <p>Conte quais canais você utiliza e qual conteúdo deseja divulgar.</p>
-      {% if site.partnership_whatsapp %}
-      <a class="rf-btn rf-btn-primary" href="https://wa.me/{{ site.partnership_whatsapp }}?text=Olá%20Rose,%20quero%20saber%20sobre%20afiliação%20aos%20seus%20conteúdos." target="_blank" rel="noopener noreferrer">Falar com a equipe ↗</a>
-      {% elif site.whatsapp %}
-      <a class="rf-btn rf-btn-primary" href="https://wa.me/{{ site.whatsapp }}?text=Olá%20Rose,%20quero%20saber%20sobre%20afiliação%20aos%20seus%20conteúdos." target="_blank" rel="noopener noreferrer">Falar com a equipe ↗</a>
-      {% endif %}
-    </aside>
+
+    {% for category in categories %}
+    <section id="{{ category.slug }}" class="rf-affiliate-category" style="scroll-margin-top:120px; margin-top:3rem;">
+      <div class="rf-section-head" data-reveal>
+        <div>
+          <span class="rf-kicker">CATEGORIA</span>
+          <h2>{{ category.name }}</h2>
+        </div>
+        <p>{{ category.visible_assignments|length }} produto{{ category.visible_assignments|length|pluralize }} nesta categoria.</p>
+      </div>
+      <div class="rf-product-grid">
+        {% for assignment in category.visible_assignments %}
+          {% with p=assignment.product %}{% include "core/includes/product_card.html" %}{% endwith %}
+        {% endfor %}
+      </div>
+    </section>
+    {% endfor %}
+    {% else %}
+    <div class="empty-state">
+      <h2>Novas indicações em breve.</h2>
+      <p>Os produtos afiliados cadastrados no painel aparecerão aqui separados por categoria.</p>
+    </div>
+    {% endif %}
   </div>
 </section>
 {% endblock %}
