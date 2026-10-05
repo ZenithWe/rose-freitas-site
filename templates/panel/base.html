@@ -26,7 +26,8 @@
     <nav class="panel-nav" aria-label="Menu principal">
       <span class="panel-nav-label">Negócio</span>
       <a href="{% url 'dashboard' %}" {% if request.resolver_match.url_name == 'dashboard' %}class="active" aria-current="page"{% endif %}>{% include "panel/icon.html" with icon="grid" %}<span>Visão geral</span></a>
-      <a href="{% url 'panel_products' %}" {% if 'product' in request.resolver_match.url_name %}class="active" aria-current="page"{% endif %}>{% include "panel/icon.html" with icon="book" %}<span>Cursos e produtos</span></a>
+      <a href="{% url 'panel_products' %}" {% if 'product' in request.resolver_match.url_name and 'affiliate_category' not in request.resolver_match.url_name %}class="active" aria-current="page"{% endif %}>{% include "panel/icon.html" with icon="book" %}<span>Cursos e produtos</span></a>
+      <a href="{% url 'panel_affiliate_categories' %}" {% if 'affiliate_category' in request.resolver_match.url_name or request.resolver_match.url_name == 'panel_affiliate_categories' %}class="active" aria-current="page"{% endif %}>{% include "panel/icon.html" with icon="grid" %}<span>Categorias de afiliados</span></a>
       <a href="{% url 'panel_materials' %}" {% if 'material' in request.resolver_match.url_name %}class="active" aria-current="page"{% endif %}>{% include "panel/icon.html" with icon="book" %}<span>Materiais</span></a>
       <a href="{% url 'panel_vip' %}" {% if request.resolver_match.url_name == 'panel_vip' or request.resolver_match.url_name == 'panel_vip_status' %}class="active" aria-current="page"{% endif %}>{% include "panel/icon.html" with icon="star" %}<span>Solicitações VIP</span></a>
       <a href="{% url 'panel_orders' %}" {% if 'order' in request.resolver_match.url_name %}class="active" aria-current="page"{% endif %}>{% include "panel/icon.html" with icon="receipt" %}<span>Pedidos</span></a>
